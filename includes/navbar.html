@@ -1,0 +1,65 @@
+<!-- navbar -->
+<nav
+  class="navbar navbar-expand-lg navbar-dark bg-primary-dark fixed-top"
+  id="mainNavbar"
+>
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">
+      <i class="fa-solid fa-tree text-success me-2"></i>
+      BiosferIA
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#inicio">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#videos">Videos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#mapa">Explorar</a>
+        </li>
+        <!-- aquí -->
+      </ul>
+      <div class="d-none" id="userSection">
+        <div class="dropdown">
+          <button
+            class="btn btn-outline-light dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            <i class="fa-solid fa-user-circle me-1"></i>
+            <span id="userName">Usuario</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" onclick="showProfile()"
+                ><i class="fa-solid fa-user me-2"></i>Mi Perfil</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" onclick="showSettings()"
+                ><i class="fa-solid fa-gear me-2"></i>Configuración</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item text-danger" onclick="logout()"
+                ><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar
+                Sesión</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

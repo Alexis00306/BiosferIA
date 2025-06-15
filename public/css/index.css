@@ -1,0 +1,290 @@
+/* Custom CSS Variables */
+:root {
+    --primary-dark: #1a2332;
+    --primary-light: #2c3e50;
+    --success-color: #27ae60;
+    --success-light: #2ecc71;
+    --accent-color: #3498db;
+    --text-dark: #2c3e50;
+    --text-light: #7f8c8d;
+    --bg-light: #f8f9fa;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+/* Utility */
+.bg-primary-dark {
+    background-color: var(--primary-dark) !important;
+}
+
+.text-primary-dark {
+    color: var(--primary-dark) !important;
+}
+
+/* Navigation */
+.navbar {
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    background-color: rgba(26, 35, 50, 0.95) !important;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="400" r="150" fill="url(%23a)"/><circle cx="400" cy="800" r="120" fill="url(%23a)"/></svg>') no-repeat center center;
+    background-size: cover;
+    opacity: 0.1;
+    pointer-events: none;
+
+}
+
+.hero-content {
+    padding-top: 100px;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-section .btn {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Floating Cards */
+.floating-cards {
+    position: relative;
+    height: 500px;
+}
+
+.species-preview {
+    position: absolute;
+    animation: float 6s ease-in-out infinite;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border: none;
+}
+
+.species-preview:nth-child(1) {
+    top: 20%;
+    right: 20%;
+    animation-delay: 0s;
+}
+
+.species-preview:nth-child(2) {
+    bottom: 30%;
+    right: 40%;
+    animation-delay: 3s;
+}
+
+/* Statistics Cards */
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-area:hover {
+    border-color: var(--success-color);
+    background-color: rgba(39, 174, 96, 0.05);
+}
+
+.upload-area.dragover {
+    border-color: var(--success-color);
+    background-color: rgba(39, 174, 96, 0.1);
+}
+
+.image-preview {
+    position: relative;
+}
+
+.image-preview img {
+    max-height: 250px;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Divider */
+.divider-text {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.divider-text::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.divider-text span {
+    background: white;
+    padding: 0 1rem;
+    color: #6c757d;
+}
+
+/* Species Cards */
+.species-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+}
+
+.species-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.species-image {
+    height: 200px;
+    object-fit: cover;
+    background: linear-gradient(45deg, #f0f2f5, #e2e6ea);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* Dashboard */
+.dashboard-header {
+    padding-top: 100px;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--primary-dark);
+    color: #fff;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.footer a {
+    color: var(--success-light);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Scroll Adjustment */
+section {
+    scroll-margin-top: 60px;
+}
+
+/* Card General Effects */
+.card {
+    border-radius: 12px;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+}
+
+/* Typography Enhancements */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+}
+
+.text-muted {
+    color: var(--text-light) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 767.98px) {
+    .hero-content {
+        padding-top: 60px;
+        text-align: center;
+    }
+
+    .hero-image {
+        margin-top: 2rem;
+    }
+
+    .floating-cards {
+        display: none;
+    }
+
+    .navbar .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.75rem;
+    }
+}  

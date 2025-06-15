@@ -3,72 +3,235 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Inicio de Sesión - Sierra Gorda</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sierra Gorda - Identificación de Biodiversidad</title>
 
-  <link rel="stylesheet" href="css/estilos.css" />
+  <!-- Bootstrap 5.3.2 CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome 6.5 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="public/css/index.css" />
 </head>
 
-<body class="min-vh-100 d-flex flex-column">
-  <div class="container-fluid flex-grow-1">
-    <div class="row h-100 flex-column flex-md-row">
-      <!-- Panel Izquierdo (imagen y texto) -->
-      <div class="col-md-6 d-flex justify-content-center align-items-center text-white text-center p-5 bg-cover">
-        <div>
-          <h1 class="fw-bold display-4">BiosferIA</h1>
-          <p class="mt-3 fs-5">
-            Bienvenido al portal para identificar especies de la Sierra Gorda
-            de Querétaro. Ayuda a preservar su biodiversidad de manera activa.
-          </p>
+<body>
+  <?php include 'includes/navbar.html'; ?>
+
+  <!-- Landing Page -->
+  <div id="landingPage">
+    <!-- Hero Section -->
+    <section class="hero-section" id="inicio">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <div class="row align-items-center min-vh-100">
+          <div class="col-lg-6">
+            <div class="hero-content">
+              <h1 class="display-3 fw-bold text-white mb-4">
+                Descubre la <span class="text-success">Biodiversidad</span> de
+                la Sierra Gorda
+              </h1>
+              <p class="lead text-light mb-4">
+                Utiliza inteligencia artificial para identificar especies,
+                registra tus hallazgos y contribuye a la conservación de una
+                de las regiones más biodiversas de México.
+              </p>
+              <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-success btn-lg px-4" href="paginas/login.php">
+                  <i class="fa-solid fa-camera me-2"></i> Comenzar Ahora
+                </a>
+                <a class="btn btn-outline-light btn-lg px-4" href="#videos">
+                  <i class="fa-solid fa-circle-play me-2"></i> Ver Videos
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="hero-image">
+              <div class="floating-cards">
+                <div class="card species-preview">
+                  <div class="card-body text-center">
+                    <i class="fa-solid fa-leaf text-success fs-1"></i>
+                    <h6 class="mt-2">Flora Identificada</h6>
+                  </div>
+                </div>
+                <div class="card species-preview">
+                  <div class="card-body text-center">
+                    <i class="fa-solid fa-bug text-primary fs-1"></i>
+                    <h6 class="mt-2">Fauna Registrada</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- Panel Derecho (login + logo) -->
-      <div class="col-md-6 d-flex justify-content-center align-items-center bg-light p-5">
-        <div class="w-100" style="max-width: 400px">
-          <!-- LOGO -->
-          <div class="text-center mb-auto">
-            <img src="img/logo.png" alt="Logo BiosferIA" class="img-fluid" style="max-width: 120px" />
+    <!-- Características -->
+    <section class="py-5 bg-light" id="caracteristicas">
+      <div class="container">
+        <div class="row justify-content-center mb-5">
+          <div class="col-lg-8 text-center">
+            <h2 class="display-5 fw-bold text-dark mb-3">
+              Características Principales
+            </h2>
+            <p class="lead text-muted">
+              Tecnología avanzada para la identificación y registro de
+              biodiversidad
+            </p>
           </div>
-
-          <h2 class="mb-4 text-center">Iniciar sesión</h2>
-
-          <form>
-            <div class="mb-3">
-              <label for="correo" class="form-label">Correo electrónico</label>
-              <input type="email" class="form-control" id="correo" placeholder="ejemplo@correo.com" required />
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center p-4">
+                <div class="feature-icon mb-3">
+                  <i class="fa-solid fa-camera text-success fs-1"></i>
+                </div>
+                <h5 class="fw-bold">Identificación por IA</h5>
+                <p class="text-muted">
+                  Sube una foto y nuestra IA identificará automáticamente la
+                  especie con alta precisión.
+                </p>
+              </div>
             </div>
-
-            <div class="mb-3">
-              <label for="contrasena" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="contrasena" placeholder="••••••••" required />
-            </div>
-
-            <div class="d-grid mb-3">
-              <a type="submit" class="btn btn-primary" href="inicio.html">
-                Iniciar sesión
-              </a>
-            </div>
-          </form>
-
-          <div class="text-center my-3">
-            <span>o</span>
           </div>
-
-          <a href="#" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" width="20" />
-            Iniciar sesión con Google
-          </a>
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center p-4">
+                <div class="feature-icon mb-3">
+                  <i class="fa-solid fa-book text-primary fs-1"></i>
+                </div>
+                <h5 class="fw-bold">Registro Detallado</h5>
+                <p class="text-muted">
+                  Mantén un registro completo de tus avistamientos con
+                  ubicación, fecha y notas personales.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center p-4">
+                <div class="feature-icon mb-3">
+                  <i class="fa-solid fa-users text-warning fs-1"></i>
+                </div>
+                <h5 class="fw-bold">Comunidad Científica</h5>
+                <p class="text-muted">
+                  Comparte tus hallazgos con investigadores y contribuye a la
+                  ciencia ciudadana.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Videos -->
+    <section class="py-5 bg-dark text-white" id="videos">
+      <div class="container">
+        <div class="row justify-content-center mb-5">
+          <div class="col-lg-8 text-center">
+            <h2 class="display-5 fw-bold mb-3">Videos de la Sierra Gorda</h2>
+            <p class="lead">
+              Explora la belleza natural de Querétaro a través de estos
+              documentales
+            </p>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <div class="card bg-dark border-secondary">
+              <div class="ratio ratio-16x9">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" class="card-img-top" allowfullscreen></iframe>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title text-success">
+                  Biodiversidad Excepcional
+                </h5>
+                <p class="card-text text-light">
+                  Descubre la increíble diversidad de especies que habitan en
+                  la Sierra Gorda.
+                </p>
+                <small class="text-muted">Duración: 15:30</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="card bg-dark border-secondary">
+              <div class="ratio ratio-16x9">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" class="card-img-top" allowfullscreen></iframe>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title text-success">Flora Endémica</h5>
+                <p class="card-text text-light">
+                  Conoce las plantas únicas que solo se encuentran en esta
+                  región montañosa.
+                </p>
+                <small class="text-muted">Duración: 12:45</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="card bg-dark border-secondary">
+              <div class="ratio ratio-16x9">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" class="card-img-top" allowfullscreen></iframe>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title text-success">Fauna Silvestre</h5>
+                <p class="card-text text-light">
+                  Observa los animales que habitan en los diversos ecosistemas
+                  de la sierra.
+                </p>
+                <small class="text-muted">Duración: 18:20</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mapa estilo características -->
+    <section class="py-5 bg-light" id="mapa">
+      <div class="container">
+        <div class="row justify-content-center mb-5">
+          <div class="col-lg-8 text-center">
+            <h2 class="display-5 fw-bold text-dark mb-3">
+              Mapa de Observaciones
+            </h2>
+            <p class="lead text-muted">
+              Visualiza tus registros y descubrimientos en un mapa interactivo
+            </p>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-md-10">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body p-0">
+                <div class="ratio ratio-16x9">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14954.819110804262!2d-99.6317528!3d21.2193154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d3a5c7286f9c1f%3A0xe3157407b4322e2!2sSierra%20Gorda%2C%20Quer%C3%A9taro!5e0!3m2!1ses!2smx!4v1718000000000"
+                    width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
 
 <?php include 'includes/footer.html'; ?>
+
 
 </html>

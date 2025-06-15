@@ -1,0 +1,325 @@
+    /* Custom CSS Variables */
+    :root {
+      --primary-dark: #1a2332;
+      --primary-light: #2c3e50;
+      --success-color: #27ae60;
+      --success-light: #2ecc71;
+      --accent-color: #3498db;
+      --text-dark: #2c3e50;
+      --text-light: #7f8c8d;
+      --bg-light: #f8f9fa;
+    }
+
+    /* Global Styles */
+    body {
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      color: var(--text-dark);
+      background: linear-gradient(135deg, var(--bg-light) 0%, #e9ecef 100%);
+      min-height: 100vh;
+    }
+
+    /* Utility */
+    .bg-primary-dark {
+      background-color: var(--primary-dark) !important;
+    }
+
+    .text-primary-dark {
+      color: var(--primary-dark) !important;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: var(--primary-dark) !important;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.5rem;
+    }
+
+    .main-container {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+      margin-bottom: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="400" r="150" fill="url(%23a)"/><circle cx="400" cy="800" r="120" fill="url(%23a)"/></svg>') no-repeat center center;
+      background-size: cover;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .section-content {
+      background: white;
+      border-radius: 0 0 12px 12px;
+      padding: 2rem;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .pokedex-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      border-left: 5px solid var(--success-color);
+      border: none;
+    }
+
+    .pokedex-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .specimen-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 3px solid var(--success-color);
+    }
+
+    .specimen-type {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .type-flora {
+      background: var(--success-color);
+      color: white;
+    }
+
+    .type-fauna {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .camera-container {
+      background: #f8f9fa;
+      border: 2px dashed var(--success-color);
+      border-radius: 12px;
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .camera-container:hover {
+      border-color: var(--success-light);
+      background-color: rgba(39, 174, 96, 0.05);
+    }
+
+    .camera-preview {
+      width: 100%;
+      max-width: 400px;
+      height: 300px;
+      background: #000;
+      border-radius: 10px;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .camera-controls {
+      margin-top: 1.5rem;
+    }
+
+    .btn-camera {
+      background: linear-gradient(135deg, var(--success-color), var(--success-light));
+      border: none;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-camera:hover {
+      transform: translateY(-1px);
+      color: white;
+      opacity: 0.95;
+    }
+
+    .stats-card {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .stats-card:hover {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      display: block;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-light);
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: var(--success-color);
+      margin-bottom: 1rem;
+    }
+
+    .filter-buttons {
+      margin-bottom: 2rem;
+    }
+
+    .btn-filter {
+      border: 2px solid var(--success-color);
+      color: var(--success-color);
+      background: white;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+
+    .btn-filter.active,
+    .btn-filter:hover {
+      background: var(--success-color);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    /* Typography Enhancements */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-weight: 600;
+    }
+
+    .text-muted {
+      color: var(--text-light) !important;
+    }
+
+    /* Card General Effects */
+    .card {
+      border-radius: 12px;
+      transition: box-shadow 0.3s ease;
+      border: none;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Button Enhancements */
+    .btn {
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .btn-success {
+      background: var(--success-color);
+      border-color: var(--success-color);
+    }
+
+    .btn-success:hover {
+      background: var(--success-light);
+      border-color: var(--success-light);
+    }
+
+    .btn-outline-success {
+      color: var(--success-color);
+      border-color: var(--success-color);
+    }
+
+    .btn-outline-success:hover {
+      background: var(--success-color);
+      border-color: var(--success-color);
+    }
+
+    .btn-outline-primary {
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 767.98px) {
+      .main-container {
+        margin-top: 1rem;
+      }
+
+      .specimen-image {
+        height: 150px;
+      }
+
+      .camera-container {
+        padding: 2rem 1rem;
+      }
+
+      .navbar .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.75rem;
+      }
+    }
