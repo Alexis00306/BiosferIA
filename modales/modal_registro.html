@@ -1,0 +1,80 @@
+<!-- Modal de Registro -->
+<div
+  class="modal fade"
+  id="registroModal"
+  tabindex="-1"
+  aria-labelledby="registroModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded">
+      <form action="registrar_usuario.php" method="POST">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="registroModalLabel">
+            Crear cuenta
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Cerrar"
+          ></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre completo</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nombre"
+              name="nombre"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo electrónico</label>
+            <input
+              type="email"
+              class="form-control"
+              id="correo"
+              name="correo"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="nuevaPassword" class="form-label">Contraseña</label>
+            <input
+              type="password"
+              class="form-control"
+              id="nuevaPassword"
+              name="password"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="confirmarPassword" class="form-label"
+              >Confirmar contraseña</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="confirmarPassword"
+              name="confirmar_password"
+              required
+            />
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">Registrarme</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

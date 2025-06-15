@@ -12,49 +12,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
+
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
   <link rel="stylesheet" href="../public/css/inicio.css" />
 
 </head>
 
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="#">
-        <i class="fa-solid fa-tree text-success me-2"></i>
-        BiosferIA
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#collection">
-              <i class="fas fa-book me-1"></i>Mi Colección
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#camera">
-              <i class="fas fa-camera me-1"></i>Capturar
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fas fa-user me-1"></i>Usuario
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-              <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+
+  <?php include '../includes/navbar_inicio.html'; ?>
+
 
   <div class="container main-container">
     <!-- Estadísticas -->
@@ -322,12 +291,12 @@
     </section>
   </div>
 
-  <!-- Bootstrap 5 JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-
   <script src="../public/js/inicio.js"></script>
 
 
 </body>
+
+<?php include '../includes/footer.html'; ?>
+
 
 </html>
