@@ -10,6 +10,9 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 
   <link rel="stylesheet" href="../public/css/index.css" />
 
@@ -17,6 +20,7 @@
 
 <body>
 
+  <script src="../public/js/registrar_usuario.js"></script>
   <?php include '../includes/navbar_login.html'; ?>
 
   <div class="container my-5  pt-5">
@@ -63,7 +67,9 @@
             </div>
 
             <div class="text-center mt-2">
-              <a href="#" class="text-muted small">¿Olvidaste tu contraseña?</a>
+              <a type="email" href="#" class="text-muted small" data-bs-toggle="modal" data-bs-target="#recuperarModal">
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
           </div>
         </div>
@@ -73,6 +79,8 @@
 
   <!-- Modal Registro -->
   <?php include '../modales/modal_registro.html'; ?>
+  <!-- Modal Recuperar Contraseña -->
+  <?php include '../modales/modal_recuperar_password.html'; ?>
 
   <!-- Footer -->
   <?php include '../includes/footer.html'; ?>
@@ -97,6 +105,10 @@
         });
     }
   </script>
+
+  <!-- Contenedor para alertas flotantes generales -->
+  <div id="alertGlobal" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>
+
 </body>
 
 </html>

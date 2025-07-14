@@ -1,0 +1,17 @@
+{
+    "name": "alexis/biosfer-ia",
+    "autoload": {
+        "psr-4": {
+            "Alexis\\BiosferIa\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexis Maldonado",
+            "email": "carlosalexismaldonadocarbajal@gmail.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.10"
+    }
+}

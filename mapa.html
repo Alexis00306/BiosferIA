@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sierra Gorda - Flora y Fauna (Auto-Imagen)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+      .popup-img {
+        width: 100px;
+        height: auto;
+        margin-top: 5px;
+        border-radius: 8px;
+      }
+      .flora-icon {
+        color: green;
+        font-size: 22px;
+      }
+      .fauna-icon {
+        color: brown;
+        font-size: 22px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+      const map = L.map("map").setView([21.22, -99.55], 10);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      function crearIcono(clase) {
+        return L.divIcon({
+          className: "",
+          html: `<i class="${clase}"></i>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 28],
+        });
+      }
+
+      async function buscarImagenWikipedia(nombre) {
+        // Buscamos la página más relevante con generator=search
+        const url = `https://es.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(
+          nombre
+        )}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=200`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (!data.query) return "";
+
+          // Hay solo una página porque gsrlimit=1
+          const page = Object.values(data.query.pages)[0];
+          return page?.thumbnail?.source || "";
+        } catch (error) {
+          console.error("Error buscando imagen en Wikipedia:", error);
+          return "";
+        }
+      }
+
+      const especies = [
+        // Flora
+        {
+          nombre: "Encino",
+          lugar: "Pinal de Amoles",
+          coords: [21.275, -99.598],
+          tipo: "flora",
+          icono: "fas fa-tree flora-icon",
+        },
+        {
+          nombre: "Oyamel",
+          lugar: "Landa de Matamoros",
+          coords: [21.2, -99.3],
+          tipo: "flora",
+          icono: "fas fa-seedling flora-icon",
+        },
+        {
+          nombre: "Biznaga",
+          lugar: "Peñamiller",
+          coords: [21.13, -99.829],
+          tipo: "flora",
+          icono: "fas fa-cactus flora-icon",
+        },
+        {
+          nombre: "Cedro blanco",
+          lugar: "Jalpan de Serra",
+          coords: [21.21, -99.465],
+          tipo: "flora",
+          icono: "fas fa-leaf flora-icon",
+        },
+        {
+          nombre: "Maguey pulquero",
+          lugar: "San Joaquín",
+          coords: [21.16, -99.53],
+          tipo: "flora",
+          icono: "fas fa-wine-bottle flora-icon",
+        },
+
+        // Fauna
+        {
+          nombre: "Guacamaya verde",
+          lugar: "Jalpan de Serra",
+          coords: [21.222, -99.477],
+          tipo: "fauna",
+          icono: "fas fa-dove fauna-icon",
+        },
+        {
+          nombre: "Jaguarundi",
+          lugar: "Landa de Matamoros",
+          coords: [21.217, -99.304],
+          tipo: "fauna",
+          icono: "fas fa-cat fauna-icon",
+        },
+        {
+          nombre: "Murciélago nectarívoro",
+          lugar: "San Joaquín",
+          coords: [21.152, -99.533],
+          tipo: "fauna",
+          icono: "fas fa-bug fauna-icon",
+        },
+        {
+          nombre: "Águila real",
+          lugar: "Pinal de Amoles",
+          coords: [21.28, -99.595],
+          tipo: "fauna",
+          icono: "fas fa-feather fauna-icon",
+        },
+        {
+          nombre: "Venado cola blanca",
+          lugar: "Peñamiller",
+          coords: [21.135, -99.829],
+          tipo: "fauna",
+          icono: "fas fa-paw fauna-icon",
+        },
+      ];
+
+      async function agregarMarcadores() {
+        for (const especie of especies) {
+          const imagen = await buscarImagenWikipedia(especie.nombre);
+          const popup = `
+          <strong>${especie.nombre}</strong><br>
+          ${especie.lugar}
+          ${imagen ? `<br><img src="${imagen}" class="popup-img">` : ""}
+        `;
+          L.marker(especie.coords, {
+            icon: crearIcono(especie.icono),
+          })
+            .addTo(map)
+            .bindPopup(popup);
+        }
+      }
+
+      agregarMarcadores();
+    </script>
+  </body>
+</html>

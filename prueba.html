@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reconocimiento Específico - Flora y Fauna</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 2em auto;
+        text-align: center;
+      }
+      #resultado {
+        margin-top: 20px;
+        text-align: left;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Reconocimiento Específico de Flora y Fauna</h1>
+    <p>Sube una imagen y detectaremos la especie lo más específica posible.</p>
+
+    <input type="file" id="imagenInput" accept="image/*" />
+    <button id="btnAnalizar" disabled>Analizar Imagen</button>
+
+    <div id="resultado"></div>
+
+    <script>
+      const API_KEY = "AIzaSyBV9M7KOEjza-_gXT1Q_lxkofnXhQuMYoI"; // Sustituye por tu API KEY válida
+
+      const imagenInput = document.getElementById("imagenInput");
+      const btnAnalizar = document.getElementById("btnAnalizar");
+      const resultadoDiv = document.getElementById("resultado");
+
+      let base64Image = "";
+
+      imagenInput.addEventListener("change", () => {
+        if (imagenInput.files.length > 0) {
+          btnAnalizar.disabled = false;
+          resultadoDiv.innerHTML = "";
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            base64Image = e.target.result.split(",")[1];
+            resultadoDiv.innerHTML = `<img src="${e.target.result}" alt="Imagen subida" />`;
+          };
+          reader.readAsDataURL(imagenInput.files[0]);
+        } else {
+          btnAnalizar.disabled = true;
+          base64Image = "";
+          resultadoDiv.innerHTML = "";
+        }
+      });
+
+      btnAnalizar.addEventListener("click", () => {
+        if (!base64Image) return;
+
+        resultadoDiv.innerHTML += `<p><em>Analizando imagen...</em></p>`;
+
+        fetch(
+          `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              requests: [
+                {
+                  image: { content: base64Image },
+                  features: [{ type: "WEB_DETECTION", maxResults: 10 }],
+                },
+              ],
+            }),
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Respuesta completa:", data);
+            resultadoDiv.innerHTML = `<img src="data:image/jpeg;base64,${base64Image}" alt="Imagen subida" />`;
+
+            if (data.error) {
+              resultadoDiv.innerHTML += `<p><strong>Error:</strong> ${data.error.message}</p>`;
+              return;
+            }
+
+            const deteccionWeb = data.responses[0].webDetection;
+
+            if (
+              !deteccionWeb ||
+              !deteccionWeb.webEntities ||
+              deteccionWeb.webEntities.length === 0
+            ) {
+              resultadoDiv.innerHTML += `<p>No se detectaron especies específicas.</p>`;
+              return;
+            }
+
+            resultadoDiv.innerHTML += `<h3>Posibles especies detectadas:</h3><ul>`;
+            deteccionWeb.webEntities.forEach((entidad) => {
+              if (entidad.description) {
+                resultadoDiv.innerHTML += `<li>${
+                  entidad.description
+                } (confianza: ${((entidad.score || 0) * 100).toFixed(
+                  1
+                )}%)</li>`;
+              }
+            });
+            resultadoDiv.innerHTML += `</ul>`;
+          })
+          .catch((err) => {
+            console.error("Error al hacer la solicitud:", err);
+            resultadoDiv.innerHTML += `<p>Error al analizar la imagen: ${err}</p>`;
+          });
+      });
+    </script>
+  </body>
+</html>

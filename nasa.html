@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NASA - Imagen del Día</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #0d1117;
+        color: #fff;
+        text-align: center;
+        padding: 20px;
+      }
+      button {
+        background-color: #1e90ff;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      img {
+        margin-top: 20px;
+        max-width: 100%;
+        border-radius: 10px;
+      }
+      .descripcion {
+        margin-top: 15px;
+        text-align: justify;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🌌 NASA - Imagen Astronómica del Día</h1>
+    <button onclick="cargarImagen()">Cargar imagen</button>
+    <div id="contenido"></div>
+
+    <script>
+      function cargarImagen() {
+        const apiKey = "0c4FLxNrTcxy2a91Bfa3676nxIh1JPmd1sZg1zLd";
+        const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
+
+        fetch(url)
+          .then((res) => res.json())
+          .then((data) => {
+            const contenido = `
+            <h2>${data.title}</h2>
+            <img src="${data.url}" alt="${data.title}">
+            <p class="descripcion">${data.explanation}</p>
+          `;
+            document.getElementById("contenido").innerHTML = contenido;
+          })
+          .catch((err) => {
+            document.getElementById("contenido").innerHTML =
+              "<p>Error al cargar la imagen. Intenta más tarde.</p>";
+            console.error(err);
+          });
+      }
+    </script>
+  </body>
+</html>

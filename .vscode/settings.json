@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/986df099-eae7-4a04-98b1-b29dbf13aed3/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/BiosferIA",
+    "appService.deploySubpath": "."
+}

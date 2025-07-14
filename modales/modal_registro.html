@@ -8,7 +8,7 @@
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg rounded">
-      <form action="registrar_usuario.php" method="POST">
+      <form id="registroForm">
         <div class="modal-header border-0 pb-0">
           <h5 class="modal-title fw-bold" id="registroModalLabel">
             Crear cuenta
@@ -21,13 +21,25 @@
           ></button>
         </div>
         <div class="modal-body p-4">
+          <div id="alertRegistro"></div>
+
           <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre completo</label>
+            <label for="nombre" class="form-label">Nombre</label>
             <input
               type="text"
               class="form-control"
               id="nombre"
               name="nombre"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="apellido" class="form-label">Apellidos</label>
+            <input
+              type="text"
+              class="form-control"
+              id="apellido"
+              name="apellido"
               required
             />
           </div>
@@ -59,7 +71,6 @@
               type="password"
               class="form-control"
               id="confirmarPassword"
-              name="confirmar_password"
               required
             />
           </div>
