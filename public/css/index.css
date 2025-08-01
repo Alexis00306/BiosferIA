@@ -45,7 +45,6 @@ body {
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
 }
 
-
 /* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
@@ -63,7 +62,6 @@ body {
     background-size: cover;
     opacity: 0.1;
     pointer-events: none;
-
 }
 
 .hero-content {
@@ -287,4 +285,81 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 0.9rem;
         padding: 0.4rem 0.75rem;
     }
-}  
+}
+
+/* Login success animation container */
+#loginSuccessAnimation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 550px;       /* más grande */
+  height: 250px;      /* más grande */
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 3000;      /* aseguramos que esté encima */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+
+/* Butterfly animation (moved outside media query for all screens) */
+.butterfly {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  animation: fly 3s infinite ease-in-out;
+  cursor: default;
+}
+
+.wing {
+  position: absolute;
+  top: 20px;
+  width: 35px;
+  height: 50px;
+  background: linear-gradient(45deg, #FF69B4, #FF1493);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transform-origin: bottom center;
+  animation: flap 1.5s infinite ease-in-out;
+}
+
+.wing.left {
+  left: 0;
+  transform-origin: bottom right;
+  animation-delay: 0s;
+  clip-path: polygon(0 0, 100% 20%, 100% 100%, 0% 80%);
+}
+
+.wing.right {
+  right: 0;
+  transform-origin: bottom left;
+  animation-delay: 0.75s;
+  clip-path: polygon(100% 0, 0% 20%, 0% 100%, 100% 80%);
+}
+
+.body {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 12px;
+  height: 60px;
+  background: #8B008B;
+  border-radius: 6px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 5px #C71585;
+}
+
+@keyframes flap {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(20deg); }
+}
+
+@keyframes fly {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px) translateX(10px) rotate(5deg); }
+}

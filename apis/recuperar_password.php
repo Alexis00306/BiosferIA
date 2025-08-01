@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit();
 }
 
-// Verificar email
+// Validar email
 $email = trim($_POST['emailRecover'] ?? '');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(["mensaje" => "Correo inválido.", "tipo" => "danger"]);
@@ -26,7 +26,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Verificar si el correo existe
-$stmt = $conn->prepare("SELECT id_usuario FROM usuario WHERE correo = ?");
+$stmt = $conn->prepare("SELECT id FROM usuarios WHERE correo = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -36,22 +36,21 @@ if ($result->num_rows === 0) {
     exit();
 }
 
-$id_usuario = $result->fetch_assoc()['id_usuario'];
+$id_usuario = $result->fetch_assoc()['id'];
 
 // Generar nueva contraseña segura
 function generarPassword($length = 12)
 {
     $all = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-    $password = substr(str_shuffle($all), 0, $length);
-    return $password;
+    return substr(str_shuffle($all), 0, $length);
 }
 
 $nuevaPassword = generarPassword(12);
 $hashedPassword = password_hash($nuevaPassword, PASSWORD_BCRYPT);
 
-// Actualizar en base de datos
+// Actualizar contraseña en base de datos
 try {
-    $stmt = $conn->prepare("UPDATE usuario SET password = ? WHERE id_usuario = ?");
+    $stmt = $conn->prepare("UPDATE usuarios SET contraseña = ? WHERE id = ?");
     $stmt->bind_param("si", $hashedPassword, $id_usuario);
 
     if (!$stmt->execute()) {
@@ -69,10 +68,13 @@ try {
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'carlosalexismaldonadocarbajal@gmail.com';  // ✅ Poner tu correo real
-    $mail->Password = 'alzw rysa fbld tgvq'; // ✅ Contraseña de app, no la normal
+    $mail->Username = 'carlosalexismaldonadocarbajal@gmail.com'; // Tu correo real
+    $mail->Password = 'alzw rysa fbld tgvq'; // Contraseña de aplicación, no tu contraseña normal
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
+    $mail->CharSet = 'UTF-8';
+    $mail->Encoding = 'base64';
+
 
     $mail->setFrom('carlosalexismaldonadocarbajal@gmail.com', 'BiosferIA Soporte');
     $mail->addAddress($email);
@@ -94,4 +96,3 @@ try {
 } catch (Exception $e) {
     echo json_encode(["mensaje" => "Error al enviar el correo: {$mail->ErrorInfo}", "tipo" => "danger"]);
 }
-?>

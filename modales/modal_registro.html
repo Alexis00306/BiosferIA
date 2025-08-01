@@ -8,11 +8,9 @@
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg rounded">
-      <form id="registroForm">
+      <form id="registroForm" class="needs-validation" novalidate>
         <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title fw-bold" id="registroModalLabel">
-            Crear cuenta
-          </h5>
+          <h5 class="modal-title fw-bold" id="registroModalLabel">Registro</h5>
           <button
             type="button"
             class="btn-close"
@@ -20,9 +18,8 @@
             aria-label="Cerrar"
           ></button>
         </div>
-        <div class="modal-body p-4">
-          <div id="alertRegistro"></div>
-
+        <div class="modal-body">
+          <!-- Nombre -->
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
             <input
@@ -32,9 +29,12 @@
               name="nombre"
               required
             />
+            <div class="invalid-feedback">El nombre es requerido.</div>
           </div>
+
+          <!-- Apellido -->
           <div class="mb-3">
-            <label for="apellido" class="form-label">Apellidos</label>
+            <label for="apellido" class="form-label">Apellido</label>
             <input
               type="text"
               class="form-control"
@@ -42,9 +42,12 @@
               name="apellido"
               required
             />
+            <div class="invalid-feedback">El apellido es requerido.</div>
           </div>
+
+          <!-- Correo -->
           <div class="mb-3">
-            <label for="correo" class="form-label">Correo electrónico</label>
+            <label for="correo" class="form-label">Correo</label>
             <input
               type="email"
               class="form-control"
@@ -52,38 +55,61 @@
               name="correo"
               required
             />
+            <div class="invalid-feedback">El correo es inválido.</div>
           </div>
+
+          <!-- Contraseña -->
           <div class="mb-3">
             <label for="nuevaPassword" class="form-label">Contraseña</label>
-            <input
-              type="password"
-              class="form-control"
-              id="nuevaPassword"
-              name="password"
-              required
-            />
+            <div class="input-group">
+              <input
+                type="password"
+                class="form-control"
+                id="nuevaPassword"
+                name="nuevaPassword"
+                required
+                aria-describedby="passwordHelpBlock"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                onclick="togglePassword('nuevaPassword', this)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback" id="passwordFeedback">
+              La contraseña debe tener al menos una mayúscula, una minúscula,
+              un número, un símbolo y mínimo 8 caracteres.
+            </div>
           </div>
+
+          <!-- Confirmar Contraseña -->
           <div class="mb-3">
-            <label for="confirmarPassword" class="form-label"
-              >Confirmar contraseña</label
-            >
-            <input
-              type="password"
-              class="form-control"
-              id="confirmarPassword"
-              required
-            />
+            <label for="confirmarPassword" class="form-label">Confirmar contraseña</label>
+            <div class="input-group">
+              <input
+                type="password"
+                class="form-control"
+                id="confirmarPassword"
+                required
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                onclick="togglePassword('confirmarPassword', this)"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback" id="confirmPasswordFeedback">
+              Las contraseñas no coinciden.
+            </div>
           </div>
         </div>
+
         <div class="modal-footer border-0 pt-0">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Cancelar
-          </button>
-          <button type="submit" class="btn btn-success">Registrarme</button>
+          <button type="submit" class="btn btn-primary w-100">Registrarse</button>
         </div>
       </form>
     </div>

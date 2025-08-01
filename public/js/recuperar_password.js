@@ -1,33 +1,34 @@
-$('#formRecuperarPassword').submit(function (e) {
+$('#formRecuperarPassword').on('submit', function (e) {
   e.preventDefault();
-  const email = $('#emailRecover').val();
+
+  const email = $('#emailRecover').val().trim();
+
+  if (email === '') {
+    mostrarAlertaGlobal('Por favor ingresa tu correo electrónico.', 'danger');
+    return;
+  }
+
+  const $btn = $('#btnRecuperar');
+  $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Enviando...');
 
   $.ajax({
+    url: '../apis/recuperar_password.php',
     type: 'POST',
-    url: '../apis/registrar_usuario.php',
     data: { emailRecover: email },
     dataType: 'json',
-    success: function (res) {
-      const alertClass =
-        res.tipo === 'success' ? 'alert-success' : 'alert-danger';
-      $('#alertRecuperar').html(`
-        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-          ${res.mensaje}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-      `);
-
-      if (res.tipo === 'success') {
+    success: function (response) {
+      if (response.tipo === 'success') {
         $('#formRecuperarPassword')[0].reset();
+        $('#recuperarModal').modal('hide');
       }
+
+      mostrarAlertaGlobal(response.mensaje, response.tipo || 'danger');
     },
     error: function () {
-      $('#alertRecuperar').html(`
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          Error al procesar la solicitud. Intenta de nuevo más tarde.
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-      `);
+      mostrarAlertaGlobal('Error al conectar con el servidor.', 'danger');
+    },
+    complete: function () {
+      $btn.prop('disabled', false).html('Enviar nueva contraseña');
     }
   });
 });

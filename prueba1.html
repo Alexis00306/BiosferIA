@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reconocimiento Específico - Flora y Fauna</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 2em auto;
+        text-align: center;
+      }
+      #resultado {
+        margin-top: 20px;
+        text-align: left;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Reconocimiento Específico de Flora y Fauna</h1>
+    <input type="file" id="imagenInput" accept="image/*" />
+    <button id="btnAnalizar" disabled>Analizar Imagen</button>
+    <div id="resultado"></div>
+
+    <script>
+      const API_KEY = "AIzaSyBV9M7KOEjza-_gXT1Q_lxkofnXhQuMYoI";
+
+      const imagenInput = document.getElementById("imagenInput");
+      const btnAnalizar = document.getElementById("btnAnalizar");
+      const resultadoDiv = document.getElementById("resultado");
+
+      let base64Image = "";
+
+      imagenInput.addEventListener("change", () => {
+        if (imagenInput.files.length > 0) {
+          btnAnalizar.disabled = false;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            base64Image = e.target.result.split(",")[1];
+            resultadoDiv.innerHTML = `<img src="${e.target.result}" alt="Imagen subida" />`;
+          };
+          reader.readAsDataURL(imagenInput.files[0]);
+        } else {
+          btnAnalizar.disabled = true;
+          base64Image = "";
+          resultadoDiv.innerHTML = "";
+        }
+      });
+
+      btnAnalizar.addEventListener("click", async () => {
+        if (!base64Image) return;
+
+        resultadoDiv.innerHTML = `<p><em>Analizando imagen...</em></p>`;
+
+        try {
+          const response = await fetch(
+            `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                requests: [
+                  {
+                    image: { content: base64Image },
+                    features: [{ type: "WEB_DETECTION", maxResults: 5 }],
+                  },
+                ],
+              }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (data.error) {
+            resultadoDiv.innerHTML = `<p><strong>Error:</strong> ${data.error.message}</p>`;
+            return;
+          }
+
+          const webEntities = data.responses[0].webDetection?.webEntities || [];
+          if (webEntities.length === 0) {
+            resultadoDiv.innerHTML = `<p>No se detectaron especies.</p>`;
+            return;
+          }
+
+          // Elegir el nombre con mejor score
+          const mejorEntidad = webEntities.reduce((a, b) =>
+            a.score > b.score ? a : b
+          );
+          const nombreDetectado = mejorEntidad.description;
+
+          resultadoDiv.innerHTML += `<p><strong>Nombre detectado:</strong> ${nombreDetectado}</p>`;
+          resultadoDiv.innerHTML += `<p><em>Buscando información en Wikipedia...</em></p>`;
+
+          // Buscar info en español
+          let info = await buscarWikipedia(nombreDetectado, "es");
+
+          // Si no hay info en español, buscar en inglés y traducir
+          if (!info) {
+            const infoIngles = await buscarWikipedia(nombreDetectado, "en");
+            if (infoIngles) {
+              infoIngles.extract = await traducir(infoIngles.extract);
+              info = infoIngles;
+            }
+          }
+
+          if (!info) {
+            resultadoDiv.innerHTML += `<p>No se encontró información en Wikipedia.</p>`;
+            return;
+          }
+
+          // Obtener nombre común
+          const nombreComun =
+            obtenerNombreComun(info.extract) || nombreDetectado;
+          // Obtener nombre científico
+          const nombreCientifico =
+            obtenerNombreCientifico(info.extract) ||
+            info.titles?.normalized ||
+            nombreDetectado;
+
+          // Determinar tipo ajustado (flora/fauna)
+          const tipo =
+            determinarTipoDesdeExtracto(info.extract) || "Desconocido";
+          // Descripción corta: solo primera oración
+          const descripcionCorta = info.extract.split(".")[0] + ".";
+
+          resultadoDiv.innerHTML += `
+            <h3>Información obtenida:</h3>
+            <p><strong>Nombre común:</strong> ${nombreComun}</p>
+            <p><strong>Nombre científico:</strong> ${nombreCientifico}</p>
+            <p><strong>Tipo (ajustado):</strong> ${tipo}</p>
+            <p>${descripcionCorta}</p>
+          `;
+        } catch (error) {
+          resultadoDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        }
+      });
+
+      async function buscarWikipedia(titulo, idioma) {
+        try {
+          const res = await fetch(
+            `https://${idioma}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(
+              titulo
+            )}`
+          );
+          if (!res.ok) return null;
+          const json = await res.json();
+          if (json.extract) return json;
+          return null;
+        } catch {
+          return null;
+        }
+      }
+
+      async function traducir(texto) {
+        if (!texto) return texto;
+        try {
+          const textoCorto =
+            texto.length > 500 ? texto.substring(0, 500) : texto;
+          const res = await fetch(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+              textoCorto
+            )}&langpair=en|es`
+          );
+          const data = await res.json();
+          return data.responseData.translatedText || texto;
+        } catch {
+          return texto;
+        }
+      }
+
+      function obtenerNombreComun(extract) {
+        if (!extract) return null;
+        const primeraOracion = extract.split(".")[0];
+        const regex =
+          /^(La|El|Los|Las|Un|Una)?\s*([\w\sáéíóúüñ\-]+?),?\s*(también llamada|es una especie de|es un|es una|es el|es la)/i;
+        const match = primeraOracion.match(regex);
+        if (match && match[2]) return match[2].trim();
+        return null;
+      }
+
+      function obtenerNombreCientifico(extract) {
+        if (!extract) return null;
+        // Nombre científico típico: dos palabras, la primera con mayúscula, la segunda en minúscula, al inicio y seguidas de coma
+        const regex = /^([A-Z][a-z]+ [a-z]+),/;
+        const match = extract.match(regex);
+        if (match && match[1]) return match[1];
+        return null;
+      }
+
+      function determinarTipoDesdeExtracto(extract) {
+        if (!extract) return null;
+        const texto = extract.toLowerCase();
+        const floraKeys = [
+          "planta",
+          "árbol",
+          "flor",
+          "hierba",
+          "musgo",
+          "hongo",
+          "algas",
+          "arbusto",
+          "vegetal",
+          "flora",
+        ];
+        const faunaKeys = [
+          "animal",
+          "ave",
+          "mamífero",
+          "pez",
+          "reptil",
+          "anfibio",
+          "insecto",
+          "serpiente",
+          "araña",
+          "invertebrado",
+          "mariposa",
+          "crustáceo",
+          "lagarto",
+          "rata",
+          "tiburón",
+          "perro",
+          "gato",
+          "amphibian",
+          "reptile",
+          "bird",
+          "mammal",
+          "fish",
+          "insect",
+        ];
+
+        for (const f of faunaKeys) {
+          if (texto.includes(f)) return "Fauna";
+        }
+        for (const f of floraKeys) {
+          if (texto.includes(f)) return "Flora";
+        }
+        return null;
+      }
+    </script>
+  </body>
+</html>

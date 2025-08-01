@@ -15,7 +15,9 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
+  <!-- CSS Personalizados -->
   <link rel="stylesheet" href="public/css/index.css" />
+  <link rel="stylesheet" href="public/css/politicas.css" />
 </head>
 
 <body>
@@ -230,11 +232,44 @@
     </section>
   </div>
 
+  <!-- Banner de Políticas de Privacidad y Cookies -->
+  <div class="privacy-banner" id="privacyBanner">
+    <div class="container">
+      <div class="row align-items-center py-3">
+        <div class="col-lg-8 col-md-7">
+          <div class="d-flex align-items-center">
+            <i class="fa-solid fa-shield-halved text-success fs-4 me-3"></i>
+            <div>
+              <h6 class="text-white mb-1">Políticas de Privacidad y Cookies</h6>
+              <p class="text-light mb-0 small">
+                Utilizamos cookies para mejorar tu experiencia. Al continuar navegando, aceptas nuestras políticas.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-5">
+          <div class="d-flex gap-2 justify-content-end">
+            <button class="btn btn-outline-light btn-sm" onclick="showPolicyModal()">
+              <i class="fa-solid fa-info-circle me-1"></i> Más Info
+            </button>
+            <button class="btn btn-success btn-sm" onclick="acceptPolicies()">
+              <i class="fa-solid fa-check me-1"></i> Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal Politicas -->
+  <?php include 'modales/modal_politicas.html'; ?>
+
   <!-- Bootstrap JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script src="public/js/politicas.js"></script>
 </body>
 
 <?php include 'includes/footer.html'; ?>
-
 
 </html>

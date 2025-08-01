@@ -2,28 +2,32 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mi Colección - Flora y Fauna</title>
 
   <!-- Bootstrap 5 CSS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 
   <!-- Bootstrap 5 JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 
   <link rel="stylesheet" href="../public/css/inicio.css" />
-
 </head>
 
 <body>
 
   <?php include '../includes/navbar_inicio.html'; ?>
-
+  <script src="../public/js/registro.js" defer></script>
+  <script src="../public/js/mostrar_especies.js" defer></script>
 
   <div class="container main-container">
     <!-- Estadísticas -->
@@ -31,28 +35,28 @@
       <div class="col-md-3 col-6">
         <div class="stats-card">
           <i class="fas fa-seedling mb-2" style="font-size: 2rem;"></i>
-          <span class="stats-number" id="floraCount">12</span>
+          <span class="stats-number" id="totalFlora">12</span>
           <small>Especies Flora</small>
         </div>
       </div>
       <div class="col-md-3 col-6">
         <div class="stats-card">
           <i class="fas fa-paw mb-2" style="font-size: 2rem;"></i>
-          <span class="stats-number" id="faunaCount">8</span>
+          <span class="stats-number" id="totalFauna">8</span>
           <small>Especies Fauna</small>
         </div>
       </div>
       <div class="col-md-3 col-6">
         <div class="stats-card">
           <i class="fas fa-calendar mb-2" style="font-size: 2rem;"></i>
-          <span class="stats-number" id="monthCount">3</span>
+          <span class="stats-number" id="especiesEsteMes">3</span>
           <small>Este Mes</small>
         </div>
       </div>
       <div class="col-md-3 col-6">
         <div class="stats-card">
           <i class="fas fa-trophy mb-2" style="font-size: 2rem;"></i>
-          <span class="stats-number" id="totalCount">20</span>
+          <span class="stats-number" id="totalEspecies">20</span>
           <small>Total</small>
         </div>
       </div>
@@ -86,105 +90,6 @@
 
         <!-- Grid de especies -->
         <div class="row" id="speciesGrid">
-          <!-- Ejemplo Flora -->
-          <div class="col-lg-4 col-md-6 mb-4 species-item" data-type="flora">
-            <div class="pokedex-card">
-              <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=200&fit=crop" alt="Roble"
-                class="specimen-image">
-              <div class="mt-3">
-                <span class="specimen-type type-flora">
-                  <i class="fas fa-seedling me-1"></i>FLORA
-                </span>
-                <h5 class="fw-bold mb-2">Roble Común</h5>
-                <p class="text-muted mb-2"><em>Quercus robur</em></p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <small class="text-muted">
-                    <i class="fas fa-map-marker-alt me-1"></i>
-                    Parque Central
-                  </small>
-                  <small class="text-muted">
-                    <i class="fas fa-calendar me-1"></i>
-                    15/06/2025
-                  </small>
-                </div>
-                <div class="mt-2">
-                  <button class="btn btn-sm btn-outline-success me-2">
-                    <i class="fas fa-eye me-1"></i>Ver Detalles
-                  </button>
-                  <button class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-share me-1"></i>Compartir
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ejemplo Fauna -->
-          <div class="col-lg-4 col-md-6 mb-4 species-item" data-type="fauna">
-            <div class="pokedex-card">
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD6dujKi31EmiPX0jLk4XDa9bT_sFAqb41DHWrhEmQkFLs2AydB5abO6bnJ9lIEMfUz4Kgw8IMdcudS8wNTTLCcT4Y3xnp1Fd0WOaViCOc"
-                alt="Mariposa" class="specimen-image">
-              <div class="mt-3">
-                <span class="specimen-type type-fauna">
-                  <i class="fas fa-paw me-1"></i>FAUNA
-                </span>
-                <h5 class="fw-bold mb-2">Mariposa Monarca</h5>
-                <p class="text-muted mb-2"><em>Danaus plexippus</em></p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <small class="text-muted">
-                    <i class="fas fa-map-marker-alt me-1"></i>
-                    Jardín Botánico
-                  </small>
-                  <small class="text-muted">
-                    <i class="fas fa-calendar me-1"></i>
-                    14/06/2025
-                  </small>
-                </div>
-                <div class="mt-2">
-                  <button class="btn btn-sm btn-outline-success me-2">
-                    <i class="fas fa-eye me-1"></i>Ver Detalles
-                  </button>
-                  <button class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-share me-1"></i>Compartir
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Más ejemplos... -->
-          <div class="col-lg-4 col-md-6 mb-4 species-item" data-type="flora">
-            <div class="pokedex-card">
-              <img src="https://images.unsplash.com/photo-1463936575829-25148e1db1b8?w=400&h=200&fit=crop" alt="Helecho"
-                class="specimen-image">
-              <div class="mt-3">
-                <span class="specimen-type type-flora">
-                  <i class="fas fa-seedling me-1"></i>FLORA
-                </span>
-                <h5 class="fw-bold mb-2">Helecho Común</h5>
-                <p class="text-muted mb-2"><em>Pteridium aquilinum</em></p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <small class="text-muted">
-                    <i class="fas fa-map-marker-alt me-1"></i>
-                    Bosque Norte
-                  </small>
-                  <small class="text-muted">
-                    <i class="fas fa-calendar me-1"></i>
-                    13/06/2025
-                  </small>
-                </div>
-                <div class="mt-2">
-                  <button class="btn btn-sm btn-outline-success me-2">
-                    <i class="fas fa-eye me-1"></i>Ver Detalles
-                  </button>
-                  <button class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-share me-1"></i>Compartir
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Estado vacío (oculto por defecto) -->
@@ -217,7 +122,7 @@
                 </div>
               </div>
 
-              <div class="camera-controls">
+              <div class="camera-controls my-3">
                 <button class="btn btn-camera me-2" id="startCamera">
                   <i class="fas fa-video me-2"></i>
                   Iniciar Cámara
@@ -232,7 +137,7 @@
                 </button>
               </div>
 
-              <!-- Formulario de registro (aparece después de capturar) -->
+              <!-- Formulario de registro (oculto inicialmente) -->
               <div class="mt-4 d-none" id="captureForm">
                 <div class="card">
                   <div class="card-header bg-success text-white">
@@ -242,11 +147,11 @@
                     </h5>
                   </div>
                   <div class="card-body">
-                    <form>
+                    <form id="formRegistro" enctype="multipart/form-data">
                       <div class="row">
                         <div class="col-md-6 mb-3">
                           <label class="form-label">Tipo de Especie</label>
-                          <select class="form-select" required>
+                          <select class="form-select" id="tipo" name="tipo" required>
                             <option value="">Seleccionar...</option>
                             <option value="flora">Flora</option>
                             <option value="fauna">Fauna</option>
@@ -254,23 +159,28 @@
                         </div>
                         <div class="col-md-6 mb-3">
                           <label class="form-label">Nombre Común</label>
-                          <input type="text" class="form-control" placeholder="Ej: Roble, Mariposa Monarca">
+                          <input type="text" class="form-control" id="nombreComun" name="nombre_comun"
+                            placeholder="Ej: Roble" />
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-md-6 mb-3">
                           <label class="form-label">Nombre Científico</label>
-                          <input type="text" class="form-control" placeholder="Ej: Quercus robur">
+                          <input type="text" class="form-control" id="nombreCientifico" name="nombre_cientifico"
+                            placeholder="Ej: Quercus robur" />
                         </div>
                         <div class="col-md-6 mb-3">
                           <label class="form-label">Ubicación</label>
-                          <input type="text" class="form-control" placeholder="Ej: Parque Central">
+                          <input type="text" class="form-control" id="ubicacion" name="ubicacion"
+                            placeholder="Ej: Parque Central" />
+                          <input type="hidden" id="latitud" name="latitud" />
+                          <input type="hidden" id="longitud" name="longitud" />
                         </div>
                       </div>
                       <div class="mb-3">
                         <label class="form-label">Observaciones</label>
-                        <textarea class="form-control" rows="3"
-                          placeholder="Describe características, comportamiento, etc."></textarea>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
+                          placeholder="Describe características"></textarea>
                       </div>
                       <div class="text-end">
                         <button type="button" class="btn btn-secondary me-2" id="cancelCapture">
@@ -284,6 +194,21 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Modal Reconociendo especie -->
+              <div class="modal fade" id="modalReconociendo" tabindex="-1" aria-labelledby="modalReconociendoLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-body text-center p-4">
+                      <i class="fas fa-spinner fa-spin fa-3x mb-3"></i>
+                      <h5>Reconociendo especie...</h5>
+                      <p>Por favor espera un momento.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -291,12 +216,13 @@
     </section>
   </div>
 
-  <script src="../public/js/inicio.js"></script>
+  <script src="../public/js/inicio.js" defer></script>
 
+  <!-- Contenedor para alertas flotantes generales -->
+  <div id="alertGlobal" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>
 
 </body>
 
 <?php include '../includes/footer.html'; ?>
-
 
 </html>

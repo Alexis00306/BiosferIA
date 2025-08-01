@@ -1,0 +1,109 @@
+<!-- Modal de Políticas Detalladas -->
+<div class="privacy-overlay" id="policyModal">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">
+              <i class="fa-solid fa-shield-halved me-2"></i>
+              Políticas de Privacidad y Cookies
+            </h4>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              onclick="closePolicyModal()"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="policy-section">
+              <h5>
+                <i class="fa-solid fa-user-shield me-2"></i>Política de
+                Privacidad
+              </h5>
+              <p>
+                <strong>Recopilación de Datos:</strong> Recopilamos información
+                que nos proporcionas voluntariamente al registrarte, como
+                nombre, email y ubicación de avistamientos.
+              </p>
+              <p>
+                <strong>Uso de Datos:</strong> Utilizamos tus datos para
+                identificar especies, mantener registros de biodiversidad y
+                mejorar nuestros servicios de IA.
+              </p>
+              <p>
+                <strong>Compartir Datos:</strong> Tus avistamientos pueden ser
+                compartidos de forma anónima con la comunidad científica para
+                fines de investigación y conservación.
+              </p>
+              <p>
+                <strong>Seguridad:</strong> Implementamos medidas de seguridad
+                para proteger tu información personal.
+              </p>
+            </div>
+
+            <div class="policy-section">
+              <h5>
+                <i class="fa-solid fa-cookie-bite me-2"></i>Política de Cookies
+              </h5>
+              <p>
+                <strong>Cookies Esenciales:</strong> Necesarias para el
+                funcionamiento básico del sitio, como mantener tu sesión activa.
+              </p>
+              <p>
+                <strong>Cookies de Rendimiento:</strong> Nos ayudan a entender
+                cómo interactúas con el sitio para mejorarlo.
+              </p>
+              <p>
+                <strong>Cookies de Funcionalidad:</strong> Recuerdan tus
+                preferencias y configuraciones personalizadas.
+              </p>
+              <p>
+                <strong>Control:</strong> Puedes gestionar las cookies desde la
+                configuración de tu navegador.
+              </p>
+            </div>
+
+            <div class="policy-section">
+              <h5>
+                <i class="fa-solid fa-leaf me-2"></i>Contribución Científica
+              </h5>
+              <p>
+                Al usar nuestra plataforma, contribuyes a la conservación de la
+                Sierra Gorda. Tus registros ayudan a:
+              </p>
+              <ul>
+                <li>Monitorear la biodiversidad regional</li>
+                <li>Identificar especies en riesgo</li>
+                <li>Apoyar programas de conservación</li>
+                <li>Facilitar la investigación científica</li>
+              </ul>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fa-solid fa-info-circle me-2"></i>
+              <strong>Última actualización:</strong> Mayo 2025. Nos reservamos
+              el derecho de actualizar estas políticas según sea necesario.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closePolicyModal()"
+            >
+              <i class="fa-solid fa-times me-1"></i> Cerrar
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              onclick="acceptPolicies()"
+            >
+              <i class="fa-solid fa-check me-1"></i> Aceptar y Continuar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
