@@ -5,7 +5,7 @@ CREATE TABLE usuarios (
   nombre VARCHAR(100),
   apellido VARCHAR(100),
   correo VARCHAR(100) UNIQUE,
-  contraseña VARCHAR(255),
+  password VARCHAR(255),
   google_id VARCHAR(255) DEFAULT NULL,
   fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );

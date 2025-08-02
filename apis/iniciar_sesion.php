@@ -11,7 +11,7 @@ if (empty($email) || empty($password)) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT id, nombre, apellido, correo, contraseña FROM usuarios WHERE correo = ?");
+$stmt = $conn->prepare("SELECT id, nombre, apellido, correo, password FROM usuarios WHERE correo = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $resultado = $stmt->get_result();
@@ -23,7 +23,7 @@ if ($resultado->num_rows === 0) {
 
 $usuario = $resultado->fetch_assoc();
 
-if (!password_verify($password, $usuario['contraseña'])) {
+if (!password_verify($password, $usuario['password'])) {
     echo json_encode(["mensaje" => "Contraseña incorrecta", "tipo" => "danger"]);
     exit;
 }

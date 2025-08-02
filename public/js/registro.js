@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let fotoBlob = null;
   let camStream = null;
+  let camaraActual = 'user'; // 'user' para frontal, 'environment' para trasera
+  let dispositivosCamera = [];
+  let videoElement = null;
 
   // Elementos
   const startCameraBtn = document.getElementById("startCamera");
@@ -21,6 +24,146 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Al iniciar, oculta el formulario
   document.getElementById("captureForm").classList.add("d-none");
+
+  // Detectar si es dispositivo móvil
+  function esDispositivoMovil() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+           || window.innerWidth <= 768;
+  }
+
+  // Configurar cámara inicial según dispositivo
+  function configurarCamaraInicial() {
+    camaraActual = esDispositivoMovil() ? 'environment' : 'user';
+  }
+
+  // Crear botón de alternar cámara
+  function crearBotonAlternarCamera() {
+    if (esDispositivoMovil() && !document.getElementById('toggleCameraBtn')) {
+      const toggleBtn = document.createElement('button');
+      toggleBtn.id = 'toggleCameraBtn';
+      toggleBtn.className = 'btn btn-camera';
+      toggleBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Voltear';
+      toggleBtn.disabled = true;
+      toggleBtn.style.display = 'none';
+      
+      // Insertar después del botón de capturar
+      capturePhotoBtn.parentNode.insertBefore(toggleBtn, capturePhotoBtn.nextSibling);
+      
+      toggleBtn.addEventListener('click', alternarCamara);
+    }
+  }
+
+  // Enumerar dispositivos de cámara
+  async function enumerarCamaras() {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      dispositivosCamera = devices.filter(device => device.kind === 'videoinput');
+      console.log('Cámaras disponibles:', dispositivosCamera.length);
+      return dispositivosCamera.length;
+    } catch (error) {
+      console.log('Error al enumerar cámaras:', error);
+      return 0;
+    }
+  }
+
+  // Alternar entre cámaras
+  async function alternarCamara() {
+    if (!camStream) return;
+    
+    // Cambiar a la otra cámara
+    camaraActual = camaraActual === 'user' ? 'environment' : 'user';
+    
+    // Detener stream actual
+    camStream.getTracks().forEach(track => track.stop());
+    
+    // Iniciar con nueva cámara
+    try {
+      await iniciarCamara();
+    } catch (error) {
+      console.log('Error al alternar cámara:', error);
+      mostrarAlerta("No se pudo cambiar de cámara", "warning");
+    }
+  }
+
+  // Función separada para iniciar cámara con mejor manejo de errores
+  async function iniciarCamara() {
+    try {
+      // Detener stream anterior si existe
+      if (camStream) {
+        camStream.getTracks().forEach(track => track.stop());
+      }
+
+      // Configuraciones de video más compatibles con móviles
+      const constraints = {
+        video: {
+          facingMode: camaraActual,
+          width: { ideal: 1280, max: 1920 },
+          height: { ideal: 720, max: 1080 }
+        },
+        audio: false
+      };
+
+      console.log('Solicitando cámara con constraints:', constraints);
+      
+      camStream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // Limpiar preview anterior
+      cameraPreview.innerHTML = "";
+      
+      // Crear elemento video
+      videoElement = document.createElement("video");
+      videoElement.srcObject = camStream;
+      videoElement.autoplay = true;
+      videoElement.playsInline = true;
+      videoElement.muted = true; // Importante para móviles
+      videoElement.style.width = "100%";
+      videoElement.style.height = "100%";
+      videoElement.style.objectFit = "cover";
+      
+      // Manejar eventos del video
+      videoElement.onloadedmetadata = () => {
+        console.log('Video metadata cargada');
+        videoElement.play().catch(e => {
+          console.log('Error al reproducir video:', e);
+          mostrarAlerta("Error al iniciar la cámara", "danger");
+        });
+      };
+
+      cameraPreview.appendChild(videoElement);
+      
+      // Habilitar botones
+      capturePhotoBtn.disabled = false;
+      stopCameraBtn.disabled = false;
+      startCameraBtn.disabled = true;
+      
+      // Mostrar botón de alternar en móviles si hay múltiples cámaras
+      const toggleBtn = document.getElementById('toggleCameraBtn');
+      if (toggleBtn && dispositivosCamera.length > 1) {
+        toggleBtn.style.display = 'inline-block';
+        toggleBtn.disabled = false;
+      }
+      
+      console.log('Cámara iniciada exitosamente');
+      
+    } catch (error) {
+      console.error('Error detallado al acceder a la cámara:', error);
+      
+      let mensajeError = "No se pudo acceder a la cámara";
+      
+      if (error.name === 'NotAllowedError') {
+        mensajeError = "Permisos de cámara denegados. Por favor, permite el acceso en la configuración.";
+      } else if (error.name === 'NotFoundError') {
+        mensajeError = "No se encontró ninguna cámara en el dispositivo.";
+      } else if (error.name === 'NotReadableError') {
+        mensajeError = "La cámara está siendo usada por otra aplicación.";
+      } else if (error.name === 'OverconstrainedError') {
+        mensajeError = "Las configuraciones de cámara no son compatibles.";
+      }
+      
+      mostrarAlerta(mensajeError, "danger");
+      apagarCamara();
+    }
+  }
 
   // Función para capitalizar primera letra
   function capitalizarPrimeraLetra(texto) {
@@ -91,20 +234,49 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => alerta.alert('close'), 5000);
   }
 
-  // Iniciar cámara
-  startCameraBtn.addEventListener("click", async () => {
+  // Verificar permisos de cámara
+  async function verificarPermisosCamara() {
     try {
-      camStream = await navigator.mediaDevices.getUserMedia({ video: true });
-      cameraPreview.innerHTML = "";
-      const video = document.createElement("video");
-      video.srcObject = camStream;
-      video.autoplay = true;
-      video.playsInline = true;
-      cameraPreview.appendChild(video);
-      capturePhotoBtn.disabled = false;
-      stopCameraBtn.disabled = false;
-    } catch (e) {
-      mostrarAlerta("No se pudo acceder a la cámara: " + e.message, "danger");
+      const result = await navigator.permissions.query({ name: 'camera' });
+      console.log('Estado de permisos de cámara:', result.state);
+      return result.state === 'granted';
+    } catch (error) {
+      console.log('No se pudo verificar permisos:', error);
+      return null; // No disponible en todos los navegadores
+    }
+  }
+
+  // Inicializar cámara y dispositivos
+  async function inicializar() {
+    configurarCamaraInicial();
+    
+    // Verificar si el navegador soporta getUserMedia
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      mostrarAlerta("Tu navegador no soporta acceso a la cámara", "danger");
+      return;
+    }
+    
+    await enumerarCamaras();
+    crearBotonAlternarCamera();
+    
+    // Verificar permisos
+    const tienePermisos = await verificarPermisosCamara();
+    if (tienePermisos === false) {
+      mostrarAlerta("Se necesitan permisos de cámara para continuar", "warning");
+    }
+  }
+
+  // Event listener para iniciar cámara
+  startCameraBtn.addEventListener("click", async () => {
+    startCameraBtn.disabled = true;
+    startCameraBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Iniciando...';
+    
+    await iniciarCamara();
+    
+    // Restaurar botón si hay error
+    if (!camStream) {
+      startCameraBtn.disabled = false;
+      startCameraBtn.innerHTML = '<i class="fas fa-video me-2"></i><span class="d-none d-sm-inline">Iniciar </span>Cámara';
     }
   });
 
@@ -114,6 +286,12 @@ document.addEventListener("DOMContentLoaded", () => {
       camStream.getTracks().forEach(track => track.stop());
       camStream = null;
     }
+    
+    if (videoElement) {
+      videoElement.srcObject = null;
+      videoElement = null;
+    }
+    
     cameraPreview.innerHTML = `
       <div class="text-center">
         <i class="fas fa-camera" style="font-size: 3rem; color: #666;"></i>
@@ -121,48 +299,91 @@ document.addEventListener("DOMContentLoaded", () => {
         <small class="text-muted">Presiona "Iniciar Cámara" para comenzar</small>
       </div>
     `;
+    
+    // Restablecer estado de botones
     capturePhotoBtn.disabled = true;
     stopCameraBtn.disabled = true;
+    startCameraBtn.disabled = false;
+    startCameraBtn.innerHTML = '<i class="fas fa-video me-2"></i><span class="d-none d-sm-inline">Iniciar </span>Cámara';
+    
+    // Ocultar botón de alternar
+    const toggleBtn = document.getElementById('toggleCameraBtn');
+    if (toggleBtn) {
+      toggleBtn.style.display = 'none';
+      toggleBtn.disabled = true;
+    }
   }
 
   stopCameraBtn.addEventListener("click", apagarCamara);
 
-  // Capturar foto
+  // Capturar foto - MEJORADO para móviles
   capturePhotoBtn.addEventListener("click", () => {
-    if (!camStream) {
+    if (!camStream || !videoElement) {
       mostrarAlerta("La cámara no está activa", "warning");
       return;
     }
+
+    // Verificar que el video esté reproduciendo
+    if (videoElement.readyState < 2) {
+      mostrarAlerta("Esperando que la cámara esté lista...", "info");
+      return;
+    }
+
     mostrarModalReconociendo(true);
-    const video = cameraPreview.querySelector("video");
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    canvas.getContext("2d").drawImage(video, 0, 0);
-    canvas.toBlob(async (blob) => {
-      fotoBlob = blob;
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            latitudInput.value = pos.coords.latitude.toFixed(6);
-            longitudInput.value = pos.coords.longitude.toFixed(6);
-            ubicacionInput.value = await obtenerUbicacion(pos.coords.latitude, pos.coords.longitude);
-            await analizarImagen(blob);
-          },
-          async () => {
-            latitudInput.value = "";
-            longitudInput.value = "";
-            ubicacionInput.value = "";
-            await analizarImagen(blob);
-          }
-        );
-      } else {
-        latitudInput.value = "";
-        longitudInput.value = "";
-        ubicacionInput.value = "";
-        await analizarImagen(blob);
-      }
-    }, "image/jpeg");
+    
+    try {
+      const canvas = document.createElement("canvas");
+      
+      // Usar las dimensiones reales del video
+      const videoWidth = videoElement.videoWidth || videoElement.offsetWidth || 640;
+      const videoHeight = videoElement.videoHeight || videoElement.offsetHeight || 480;
+      
+      canvas.width = videoWidth;
+      canvas.height = videoHeight;
+      
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(videoElement, 0, 0, videoWidth, videoHeight);
+      
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          mostrarModalReconociendo(false);
+          mostrarAlerta("Error al capturar la imagen", "danger");
+          return;
+        }
+        
+        fotoBlob = blob;
+        console.log('Foto capturada, tamaño:', blob.size);
+        
+        // Obtener ubicación
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+              latitudInput.value = pos.coords.latitude.toFixed(6);
+              longitudInput.value = pos.coords.longitude.toFixed(6);
+              ubicacionInput.value = await obtenerUbicacion(pos.coords.latitude, pos.coords.longitude);
+              await analizarImagen(blob);
+            },
+            async () => {
+              latitudInput.value = "";
+              longitudInput.value = "";
+              ubicacionInput.value = "";
+              await analizarImagen(blob);
+            },
+            { timeout: 10000, enableHighAccuracy: false }
+          );
+        } else {
+          latitudInput.value = "";
+          longitudInput.value = "";
+          ubicacionInput.value = "";
+          await analizarImagen(blob);
+        }
+      }, "image/jpeg", 0.8);
+      
+    } catch (error) {
+      console.error('Error al capturar foto:', error);
+      mostrarModalReconociendo(false);
+      mostrarAlerta("Error al capturar la foto", "danger");
+    }
   });
 
   // Obtener ubicación
@@ -198,21 +419,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return null;
   }
 
-  // Función para validar si es un nombre científico real (MANTENIENDO TU FUNCIÓN ORIGINAL)
+  // Función para validar si es un nombre científico real
   function esNombreCientificoValido(nombre) {
     if (!nombre) return false;
     
-    // Limpiar y verificar formato básico
     const nombreLimpio = nombre.trim();
     const partes = nombreLimpio.split(/\s+/);
     
-    // Debe tener al menos 2 palabras (Género especie)
     if (partes.length < 2) return false;
     
-    // Primera palabra debe empezar con mayúscula, segunda con minúscula
     if (!/^[A-Z][a-z]+$/.test(partes[0]) || !/^[a-z]+$/.test(partes[1])) return false;
     
-    // Lista de nombres comunes en inglés que NO son nombres científicos
     const nombresComunes = [
       'red rose', 'white oak', 'black bear', 'blue jay', 'green tree', 'yellow flower',
       'common oak', 'house cat', 'tree frog', 'grass snake', 'field mouse', 'garden rose',
@@ -221,11 +438,9 @@ document.addEventListener("DOMContentLoaded", () => {
       'house spider', 'wood duck', 'sea turtle', 'tree bark', 'leaf green', 'flower red'
     ];
     
-    // Verificar que no sea un nombre común
     const nombreCompleto = nombreLimpio.toLowerCase();
     if (nombresComunes.includes(nombreCompleto)) return false;
     
-    // Verificar que las palabras no sean demasiado comunes en inglés
     const palabrasProhibidas = ['tree', 'plant', 'flower', 'animal', 'bird', 'fish', 'snake', 'frog', 'spider', 'leaf', 'grass', 'moss', 'wood', 'water', 'house', 'garden', 'wild', 'common', 'black', 'white', 'red', 'blue', 'green', 'yellow'];
     
     for (const parte of partes) {
@@ -237,24 +452,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-  // FUNCIÓN MEJORADA para extraer nombre común del extracto (MANTENIENDO TU FUNCIÓN)
+  // FUNCIÓN MEJORADA para extraer nombre común del extracto
   function obtenerNombreComunDesdeExtracto(extract, nombreCientifico) {
     if (!extract) return nombreCientifico || "No disponible";
 
-    // Obtener la primera oración (hasta el primer punto)
     const primeraOracion = extract.split(".")[0];
 
-    // Patrones mejorados para capturar nombres comunes
     const patrones = [
-      // "La mamba negra (Dendroaspis polylepis) es una..."
       /^(La|El|Los|Las|Un|Una)?\s*([A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ\s]+?)\s*\([A-Z][a-z]+\s+[a-z]+\)/,
-      // "El colibrí, también llamado picaflor"
       /^(La|El|Los|Las|Un|Una)?\s*([A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ\s]+?)\s*[,.]?\s*(también llamad[oa]|es una especie de|es un|es una|es el|es la)/i,
-      // "Black mamba (Dendroaspis polylepis)" -> extraer "Black mamba"
       /^([A-Z][a-zA-Z\s]+?)\s*\([A-Z][a-z]+\s+[a-z]+\)/,
-      // Primera palabra(s) capitalizada(s) después de artículos
       /^(The|La|El|Los|Las|Un|Una)?\s*([A-Z][a-zA-Z\s]+?)(\s+(is|are|es|son)\s+)/i,
-      // Patrón general para nombres al inicio
       /^(The|La|El|Los|Las|Un|Una)?\s*([A-Z][a-zA-Z\s]{2,25})/
     ];
 
@@ -262,33 +470,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const match = primeraOracion.match(patron);
       if (match && match[2]) {
         let nombre = match[2].trim().replace(/[.,;:()"]/g, "");
-        
-        // Limpiar palabras innecesarias al final
         nombre = nombre.replace(/\s+(is|are|es|son|also|también)$/i, "");
         
-        // Validar que no sea muy largo ni muy corto
         if (nombre.length > 2 && nombre.length < 35 && !esNombreCientificoValido(nombre)) {
           return capitalizarPrimeraLetra(nombre);
         }
       }
     }
 
-    // Si no encuentra nada específico, usar el nombre científico capitalizado
     return capitalizarPrimeraLetra(nombreCientifico) || "No disponible";
   }
 
-  // FUNCIÓN MEJORADA PARA EXTRAER NOMBRE CIENTÍFICO DEL TÍTULO (MANTENIENDO TU FUNCIÓN)
+  // FUNCIÓN MEJORADA PARA EXTRAER NOMBRE CIENTÍFICO DEL TÍTULO
   function extraerNombreCientificoDelTitulo(data) {
     console.log("Título de Wikipedia:", data.title);
     
-    // Primero buscar en el extracto patrones como "La mamba negra (Dendroaspis polylepis)"
     if (data.extract) {
-      // Múltiples patrones para nombres científicos en paréntesis
       const patronesExtracto = [
-        /\(([A-Z][a-z]+\s+[a-z]+(?:\s+[a-z]+)*)\)/g, // (Genus species)
-        /nombre científico:?\s*([A-Z][a-z]+\s+[a-z]+)/i, // nombre científico: Genus species
-        /científicamente como\s+([A-Z][a-z]+\s+[a-z]+)/i, // científicamente como Genus species
-        /binomial:?\s*([A-Z][a-z]+\s+[a-z]+)/i // binomial: Genus species
+        /\(([A-Z][a-z]+\s+[a-z]+(?:\s+[a-z]+)*)\)/g,
+        /nombre científico:?\s*([A-Z][a-z]+\s+[a-z]+)/i,
+        /científicamente como\s+([A-Z][a-z]+\s+[a-z]+)/i,
+        /binomial:?\s*([A-Z][a-z]+\s+[a-z]+)/i
       ];
       
       for (const patron of patronesExtracto) {
@@ -302,7 +504,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     
-    // Luego verificar si el título tiene formato científico (Género especie)
     if (data.title && esNombreCientificoValido(data.title.trim())) {
       console.log("✅ Nombre científico del título:", data.title);
       return data.title.trim();
@@ -360,7 +561,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("🇪🇸 Buscando nombre común en español para:", nombreCientifico);
     
     try {
-      // Primero probar en Wikipedia ES con el nombre científico
       const infoES = await buscarEnWikipedia(nombreCientifico, "es");
       if (infoES.extract) {
         const nombreComun = obtenerNombreComunDesdeExtracto(infoES.extract, nombreCientifico);
@@ -374,13 +574,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Probar con iNaturalist para obtener nombres en español
       const respuesta = await fetch(`https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(nombreCientifico)}&locale=es`);
       const json = await respuesta.json();
       
       if (json.results && json.results.length > 0) {
         const taxon = json.results[0];
-        // Buscar nombres comunes en español
         const nombreEspanol = taxon.common_name?.name;
         if (nombreEspanol && nombreEspanol !== nombreCientifico) {
           console.log("✅ Nombre común encontrado en iNaturalist ES:", nombreEspanol);
@@ -399,7 +597,6 @@ document.addEventListener("DOMContentLoaded", () => {
   async function buscarPorNombreCientifico(nombreCientifico) {
     console.log("🧬 Buscando directamente por nombre científico:", nombreCientifico);
     
-    // Probar en Wikipedia ES
     try {
       const info = await buscarEnWikipedia(nombreCientifico, "es");
       if (info.extract) {
@@ -420,7 +617,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("❌ Nombre científico no encontrado en Wikipedia ES");
     }
 
-    // Probar en Wikipedia EN
     try {
       const info = await buscarEnWikipedia(nombreCientifico, "en");
       if (info.extract) {
@@ -429,7 +625,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const tipoWikipedia = determinarTipoDesdeExtracto(descripcionTraducida);
         const descripcionCorta = descripcionTraducida.split(".")[0] + ".";
 
-        // Buscar nombre común en español
         const nombreComunEspanol = await buscarNombreComunEnEspanol(nombreCientifico);
 
         return {
@@ -452,17 +647,14 @@ document.addEventListener("DOMContentLoaded", () => {
   async function procesarInformacionWikipedia(nombreDetectado) {
     console.log("🔍 Iniciando búsqueda para:", nombreDetectado);
 
-    // ESTRATEGIA PRINCIPAL: Buscar en iNaturalist primero para obtener nombre científico confiable
     try {
       console.log("🌿 Buscando en iNaturalist...");
       const respuesta = await fetch(`https://api.inaturalist.org/v1/search?q=${encodeURIComponent(nombreDetectado)}&sources=taxa&per_page=5`);
       const json = await respuesta.json();
 
       if (json.results && json.results.length > 0) {
-        // Buscar la mejor coincidencia (preferir especies específicas sobre familias)
         let mejorCoincidencia = json.results[0];
         
-        // Intentar encontrar una especie específica (nombre binomial)
         for (const resultado of json.results) {
           if (resultado.record?.name && esNombreCientificoValido(resultado.record.name)) {
             mejorCoincidencia = resultado;
@@ -480,7 +672,6 @@ document.addEventListener("DOMContentLoaded", () => {
           rank: especie.rank
         });
         
-        // Ahora buscar información detallada usando el nombre científico
         const infoDetallada = await buscarInformacionConNombreCientifico(nombreCientifico);
         
         if (infoDetallada.success) {
@@ -493,7 +684,6 @@ document.addEventListener("DOMContentLoaded", () => {
             success: true
           };
         } else {
-          // Si no encuentra info detallada en Wikipedia, usar la básica de iNaturalist
           const nombreComun = especie.preferred_common_name || capitalizarPrimeraLetra(nombreDetectado);
           const descripcion = especie.wikipedia_summary || `${especie.rank || 'Taxón'} identificado en base de datos especializada.`;
           
@@ -511,7 +701,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("❌ Error al buscar en iNaturalist:", e);
     }
 
-    // FALLBACK: Búsqueda tradicional si iNaturalist no funciona
     console.log("🔄 iNaturalist no encontró resultados, usando búsqueda tradicional...");
     return await busquedaTradicional(nombreDetectado);
   }
@@ -520,7 +709,6 @@ document.addEventListener("DOMContentLoaded", () => {
   async function buscarInformacionConNombreCientifico(nombreCientifico) {
     console.log("🧬 Buscando información detallada para:", nombreCientifico);
     
-    // 1. Probar en Wikipedia ES con el nombre científico
     try {
       const info = await buscarEnWikipedia(nombreCientifico, "es");
       if (info.extract) {
@@ -541,7 +729,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("❌ No encontrado en Wikipedia ES con nombre científico");
     }
 
-    // 2. Probar en Wikipedia EN con el nombre científico y traducir
     try {
       const info = await buscarEnWikipedia(nombreCientifico, "en");
       if (info.extract) {
@@ -550,7 +737,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const tipoWikipedia = determinarTipoDesdeExtracto(descripcionTraducida);
         const descripcionCorta = descripcionTraducida.split(".")[0] + ".";
 
-        // Buscar nombre común en español
         const nombreComunEspanol = await buscarNombreComunEnEspanol(nombreCientifico);
 
         console.log("✅ Wikipedia EN - Información encontrada y traducida");
@@ -566,13 +752,11 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("❌ No encontrado en Wikipedia EN con nombre científico");
     }
 
-    // 3. Intentar búsqueda por nombres comunes relacionados
     try {
       const nombreComunEspanol = await buscarNombreComunEnEspanol(nombreCientifico);
       if (nombreComunEspanol) {
         console.log("✅ Nombre común en español encontrado:", nombreComunEspanol);
         
-        // Buscar en Wikipedia ES con el nombre común
         const info = await buscarEnWikipedia(nombreComunEspanol, "es");
         if (info.extract) {
           const tipoWikipedia = determinarTipoDesdeExtracto(info.extract);
@@ -595,7 +779,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return { success: false };
   }
 
-  // FUNCIÓN DE FALLBACK: Búsqueda tradicional (MANTENIENDO TU LÓGICA ORIGINAL)
+  // FUNCIÓN DE FALLBACK: Búsqueda tradicional
   async function busquedaTradicional(nombreDetectado) {
     let nombreParaBuscar = nombreDetectado.trim()
       .toLowerCase()
@@ -603,7 +787,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/\s+/g, " ");
     nombreParaBuscar = capitalizarPrimeraLetra(nombreParaBuscar);
 
-    // Si el nombre detectado parece ser un nombre científico, úsalo directamente
     if (esNombreCientificoValido(nombreDetectado)) {
       console.log("✅ Nombre detectado parece científico, buscando por nombre científico...");
       const resultadoCientifico = await buscarPorNombreCientifico(nombreDetectado);
@@ -612,7 +795,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Buscar en Wikipedia ES
     try {
       const info = await buscarEnWikipedia(nombreParaBuscar, "es");
       const tipoWikipedia = determinarTipoDesdeExtracto(info.extract);
@@ -641,7 +823,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("❌ Fallback: No encontrado en Wikipedia ES");
     }
 
-    // Buscar en Wikipedia EN
     try {
       const info = await buscarEnWikipedia(nombreDetectado, "en");
 
@@ -683,7 +864,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return { success: false };
   }
 
-  // FUNCIÓN DE ANÁLISIS DE IMAGEN MEJORADA
+  // FUNCIÓN DE ANÁLISIS DE IMAGEN MEJORADA PARA MÓVILES
   async function analizarImagen(blob) {
     const reader = new FileReader();
     return new Promise((resolve) => {
@@ -691,6 +872,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const base64Image = reader.result.split(",")[1];
 
         try {
+          console.log('Enviando imagen a Google Vision API...');
           const response = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -698,14 +880,15 @@ document.addEventListener("DOMContentLoaded", () => {
               requests: [{
                 image: { content: base64Image },
                 features: [
-                  { type: "WEB_DETECTION", maxResults: 15 }, // Aumentado para más opciones
-                  { type: "LABEL_DETECTION", maxResults: 10 } // Aumentado para más opciones
+                  { type: "WEB_DETECTION", maxResults: 15 },
+                  { type: "LABEL_DETECTION", maxResults: 10 }
                 ],
               }],
             }),
           });
 
           const data = await response.json();
+          console.log('Respuesta de Google Vision:', data);
 
           if (data.error) {
             mostrarModalReconociendo(false);
@@ -717,14 +900,12 @@ document.addEventListener("DOMContentLoaded", () => {
           const webEntities = data.responses[0]?.webDetection?.webEntities || [];
           const labels = data.responses[0]?.labelAnnotations || [];
 
-          // Función para filtrar candidatos válidos
           function esCandidatoValido(nombre) {
             if (!nombre || nombre.length < 3) return false;
             const palabrasGenerales = ['animal', 'plant', 'tree', 'flower', 'bird', 'fish', 'insect', 'mammal', 'reptile', 'nature', 'wildlife'];
             return !palabrasGenerales.includes(nombre.toLowerCase());
           }
 
-          // Evaluar todas las opciones y elegir la mejor
           const candidatos = [
             ...webEntities.map(e => ({ 
               nombre: e.description, 
@@ -740,7 +921,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }))
           ];
 
-          // Filtrar y ordenar candidatos válidos
           const candidatosValidos = candidatos
             .filter(c => c.valido)
             .sort((a, b) => b.score - a.score);
@@ -766,7 +946,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
-          // Determinar tipo inicial basado en todas las descripciones
           const todasDescripciones = candidatos.map(c => c.nombre.toLowerCase());
           const tipoInicial = determinarTipo(todasDescripciones.find(desc => determinarTipo(desc) !== null) || "");
 
@@ -779,10 +958,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
-          // Buscar información completa usando el nuevo flujo optimizado
           const infoCompleta = await procesarInformacionWikipedia(nombreDetectado);
 
-          // Rellenar formulario con la información encontrada
           if (infoCompleta.success) {
             nombreComunInput.value = infoCompleta.nombreComun;
             nombreCientificoInput.value = infoCompleta.nombreCientifico;
@@ -797,7 +974,6 @@ document.addEventListener("DOMContentLoaded", () => {
             
             mostrarAlerta(`Especie identificada: ${infoCompleta.nombreComun}`, "success");
           } else {
-            // Información básica cuando no se encuentra información completa
             nombreComunInput.value = capitalizarPrimeraLetra(nombreDetectado);
             nombreCientificoInput.value = "";
             descripcionInput.value = "";
@@ -809,18 +985,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
           mostrarModalReconociendo(false);
 
-          // Mostrar imagen capturada
+          // Mostrar imagen capturada y detener cámara
           if (camStream) {
             camStream.getTracks().forEach(track => track.stop());
             camStream = null;
           }
+          
           const img = document.createElement("img");
           img.src = reader.result;
           img.classList.add("img-fluid");
+          img.style.width = "100%";
+          img.style.height = "auto";
+          img.style.objectFit = "cover";
           cameraPreview.innerHTML = "";
           cameraPreview.appendChild(img);
 
-          // Mostrar formulario
+          // Actualizar estado de botones
+          capturePhotoBtn.disabled = true;
+          stopCameraBtn.disabled = true;
+          startCameraBtn.disabled = false;
+          startCameraBtn.innerHTML = '<i class="fas fa-video me-2"></i><span class="d-none d-sm-inline">Iniciar </span>Cámara';
+
+          const toggleBtn = document.getElementById('toggleCameraBtn');
+          if (toggleBtn) {
+            toggleBtn.style.display = 'none';
+            toggleBtn.disabled = true;
+          }
+
           document.getElementById("captureForm").classList.remove("d-none");
           resolve();
 
@@ -882,6 +1073,9 @@ document.addEventListener("DOMContentLoaded", () => {
         mostrarAlerta("Error de conexión con el servidor", "danger");
       });
   });
+
+  // Inicializar todo al cargar la página
+  inicializar();
 });
 
 function refrescarEspecies() {

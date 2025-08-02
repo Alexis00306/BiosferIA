@@ -1,221 +1,61 @@
-[29-Jul-2025 22:03:33 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[29-Jul-2025 22:03:33 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[29-Jul-2025 22:03:33 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[29-Jul-2025 22:03:33 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[29-Jul-2025 22:03:33 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[29-Jul-2025 22:03:33 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.842944s
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
-[29-Jul-2025 22:03:34 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[29-Jul-2025 22:04:39 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[29-Jul-2025 22:04:39 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[29-Jul-2025 22:04:39 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[29-Jul-2025 22:04:39 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[29-Jul-2025 22:04:39 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[29-Jul-2025 22:04:39 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.633857s
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: 2020371107@uteq.edu.mx
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: NO
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Creando nuevo usuario...
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] Usuario creado correctamente - ID: 3
-[29-Jul-2025 22:04:40 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[30-Jul-2025 21:06:46 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[30-Jul-2025 21:06:46 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[30-Jul-2025 21:06:46 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[30-Jul-2025 21:06:46 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[30-Jul-2025 21:06:46 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[30-Jul-2025 21:06:46 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.736521s
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
-[30-Jul-2025 21:06:47 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.22951s
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
-[31-Jul-2025 00:23:15 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.317559s
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
-[31-Jul-2025 01:15:45 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 01:43:31 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 01:43:31 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 01:43:31 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 01:43:31 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 01:43:31 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 01:43:31 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.242575s
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
-[31-Jul-2025 01:43:32 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 21:37:17 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:37:17 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:37:17 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:37:17 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:37:17 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:37:17 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:37:25 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 21:37:25 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 7.436815s
-[31-Jul-2025 21:37:25 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 21:37:25 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 21:37:25 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
-[31-Jul-2025 21:37:25 Europe/Berlin] [LOGIN_GOOGLE] ACCESO DENEGADO: Usuario no autorizado - carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.152813s
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
-[31-Jul-2025 21:37:26 Europe/Berlin] [LOGIN_GOOGLE] ACCESO DENEGADO: Usuario no autorizado - carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.157854s
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosalexismaldonadocarbajal@gmail.com
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? SÍ
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario administrador en BD...
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Usuario administrador encontrado: NO
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Creando nuevo usuario administrador...
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] Usuario administrador creado correctamente - ID: 4
-[31-Jul-2025 21:37:49 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 21:39:31 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:39:31 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:39:31 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:39:31 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:39:31 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:39:31 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 0, Error: Resolving timed out after 10002 milliseconds
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 11.225854s
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] CURL falló completamente
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:39:43 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:39:52 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 0, Error: Resolving timed out after 10001 milliseconds
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 11.231368s
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] CURL falló completamente
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:39:54 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 0, Error: Resolving timed out after 10011 milliseconds
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 11.241623s
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] CURL falló completamente
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:40:06 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:40:17 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 0, Error: Resolving timed out after 10011 milliseconds
-[31-Jul-2025 21:40:17 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 11.225764s
-[31-Jul-2025 21:40:17 Europe/Berlin] [LOGIN_GOOGLE] CURL falló completamente
-[31-Jul-2025 21:45:09 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:45:09 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:45:09 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:45:09 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:45:09 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:45:09 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 3.983548s
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
-[31-Jul-2025 21:45:13 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.172704s
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosalexismaldonadocarbajal@gmail.com
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? SÍ
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 4)
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 4
-[31-Jul-2025 21:45:30 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 22:05:31 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 22:05:31 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 22:05:31 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 22:05:31 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 22:05:31 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 22:05:31 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 7.767015s
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
-[31-Jul-2025 22:05:38 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.153574s
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosalexismaldonadocarbajal@gmail.com
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? SÍ
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 4)
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 4
-[31-Jul-2025 22:06:08 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.267281s
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
+[02-Aug-2025 22:31:34 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.217332s
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: NO
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Creando nuevo usuario...
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] Usuario creado correctamente - ID: 1
+[02-Aug-2025 23:50:55 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.233467s
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
+[03-Aug-2025 00:10:07 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] === INICIO SCRIPT ===
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Sesión iniciada
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Conexión incluida correctamente
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Input raw: {"credential":"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YTBkNjhjNzgzYTM1Y2M5YzEwYjI1ZTFmNGEiL...
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Token recibido (primeros 50 chars): eyJhbGciOiJSUzI1NiIsImtpZCI6ImRkNTMwMTIwNGZjMWQ2YT...
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Iniciando validación con Google...
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Respuesta Google - HTTP: 200, Error: 
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Tiempo total CURL: 0.172462s
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Datos Google decodificados correctamente
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Usuario Google: carlosmc.dn24@utsjr.edu.mx
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] ¿Es administrador? NO
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Consultando usuario en BD...
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Usuario encontrado: SÍ (ID: 1)
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] Sesión creada para usuario existente - ID: 1
+[03-Aug-2025 00:48:14 Europe/Berlin] [LOGIN_GOOGLE] === FIN SCRIPT EXITOSO ===

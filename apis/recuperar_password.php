@@ -50,7 +50,7 @@ $hashedPassword = password_hash($nuevaPassword, PASSWORD_BCRYPT);
 
 // Actualizar contraseña en base de datos
 try {
-    $stmt = $conn->prepare("UPDATE usuarios SET contraseña = ? WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE usuarios SET password = ? WHERE id = ?");
     $stmt->bind_param("si", $hashedPassword, $id_usuario);
 
     if (!$stmt->execute()) {

@@ -27,7 +27,7 @@ if ($result->num_rows > 0) {
 // Hashear la contraseña
 $passHash = password_hash($nuevaPassword, PASSWORD_DEFAULT);
 
-$query = "INSERT INTO usuarios (nombre, apellido, correo, contraseña) VALUES (?, ?, ?, ?)";
+$query = "INSERT INTO usuarios (nombre, apellido, correo, password) VALUES (?, ?, ?, ?)";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("ssss", $nombre, $apellido, $correo, $passHash);
 

@@ -30,7 +30,7 @@ try {
     // Si se proporciona nueva contraseña, actualizarla también
     if (!empty($password)) {
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("UPDATE usuarios SET nombre=?, apellido=?, correo=?, contraseña=? WHERE id=?");
+        $stmt = $conn->prepare("UPDATE usuarios SET nombre=?, apellido=?, correo=?, password=? WHERE id=?");
         $stmt->bind_param("ssssi", $nombre, $apellido, $correo, $hash, $id);
     } else {
         $stmt = $conn->prepare("UPDATE usuarios SET nombre=?, apellido=?, correo=? WHERE id=?");

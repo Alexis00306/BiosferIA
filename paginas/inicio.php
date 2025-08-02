@@ -28,6 +28,7 @@
   <?php include '../includes/navbar_inicio.html'; ?>
   <script src="../public/js/registro.js" defer></script>
   <script src="../public/js/mostrar_especies.js" defer></script>
+  <?php include '../apis/obtener_id.php'; ?>
 
   <div class="container main-container">
     <!-- Estadísticas -->
@@ -112,7 +113,7 @@
       </div>
       <div class="section-content">
         <div class="row">
-          <div class="col-lg-8 mx-auto">
+          <div class="col-12">
             <div class="camera-container">
               <div class="camera-preview" id="cameraPreview">
                 <div class="text-center">
@@ -122,19 +123,24 @@
                 </div>
               </div>
 
-              <div class="camera-controls my-3">
-                <button class="btn btn-camera me-2" id="startCamera">
+              <div class="camera-controls">
+                <button class="btn btn-camera" id="startCamera">
                   <i class="fas fa-video me-2"></i>
-                  Iniciar Cámara
+                  <span class="d-none d-sm-inline">Iniciar </span>Cámara
                 </button>
-                <button class="btn btn-camera me-2" id="capturePhoto" disabled>
+                <button class="btn btn-camera" id="capturePhoto" disabled>
                   <i class="fas fa-camera me-2"></i>
-                  Capturar Foto
+                  <span class="d-none d-sm-inline">Capturar </span>Foto
+                </button>
+                <button class="btn btn-info" id="captureLens">
+                  <i class="fas fa-glasses me-2"></i>
+                  <span class="d-none d-sm-inline">Capturar con </span>Lentes
                 </button>
                 <button class="btn btn-camera" id="stopCamera" disabled>
                   <i class="fas fa-stop me-2"></i>
-                  Detener
+                  <span class="d-none d-sm-inline">Detener</span>
                 </button>
+                <!-- El botón de alternar cámara se agregará dinámicamente aquí -->
               </div>
 
               <!-- Formulario de registro (oculto inicialmente) -->
@@ -148,8 +154,8 @@
                   </div>
                   <div class="card-body">
                     <form id="formRegistro" enctype="multipart/form-data">
-                      <div class="row">
-                        <div class="col-md-6 mb-3">
+                      <div class="row g-3">
+                        <div class="col-md-6">
                           <label class="form-label">Tipo de Especie</label>
                           <select class="form-select" id="tipo" name="tipo" required>
                             <option value="">Seleccionar...</option>
@@ -157,38 +163,38 @@
                             <option value="fauna">Fauna</option>
                           </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                           <label class="form-label">Nombre Común</label>
                           <input type="text" class="form-control" id="nombreComun" name="nombre_comun"
                             placeholder="Ej: Roble" />
                         </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                           <label class="form-label">Nombre Científico</label>
                           <input type="text" class="form-control" id="nombreCientifico" name="nombre_cientifico"
                             placeholder="Ej: Quercus robur" />
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                           <label class="form-label">Ubicación</label>
                           <input type="text" class="form-control" id="ubicacion" name="ubicacion"
                             placeholder="Ej: Parque Central" />
                           <input type="hidden" id="latitud" name="latitud" />
                           <input type="hidden" id="longitud" name="longitud" />
                         </div>
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                          placeholder="Describe características"></textarea>
-                      </div>
-                      <div class="text-end">
-                        <button type="button" class="btn btn-secondary me-2" id="cancelCapture">
-                          <i class="fas fa-times me-1"></i>Cancelar
-                        </button>
-                        <button type="submit" class="btn btn-success">
-                          <i class="fas fa-save me-1"></i>Guardar Especie
-                        </button>
+                        <div class="col-12">
+                          <label class="form-label">Observaciones</label>
+                          <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
+                            placeholder="Describe características"></textarea>
+                        </div>
+                        <div class="col-12">
+                          <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                            <button type="button" class="btn btn-secondary" id="cancelCapture">
+                              <i class="fas fa-times me-1"></i>Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                              <i class="fas fa-save me-1"></i>Guardar Especie
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </form>
                   </div>
@@ -203,7 +209,7 @@
                     <div class="modal-body text-center p-4">
                       <i class="fas fa-spinner fa-spin fa-3x mb-3"></i>
                       <h5>Reconociendo especie...</h5>
-                      <p>Por favor espera un momento.</p>
+                      <p class="mb-0">Por favor espera un momento.</p>
                     </div>
                   </div>
                 </div>
