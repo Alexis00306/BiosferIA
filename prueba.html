@@ -2,440 +2,863 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Reconocimiento Específico - Flora y Fauna</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Identificador de Especies</title>
     <style>
       body {
         font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 2em auto;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
         text-align: center;
+        color: #333;
+        margin-bottom: 30px;
       }
-      #resultado {
-        margin-top: 20px;
-        text-align: left;
+
+      .upload-area {
+        border: 3px dashed #667eea;
+        border-radius: 10px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
       }
-      img {
+
+      .upload-area:hover {
+        background-color: #f8f9ff;
+        border-color: #764ba2;
+      }
+
+      .upload-area.dragover {
+        background-color: #f0f4ff;
+        border-color: #667eea;
+      }
+
+      #fileInput {
+        display: none;
+      }
+
+      .preview-container {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      #imagePreview {
         max-width: 100%;
-        height: auto;
-        margin-top: 10px;
+        max-height: 300px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: transform 0.2s ease;
+        display: block;
+        margin: 20px auto;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 20px;
+        color: #667eea;
+      }
+
+      .results {
+        margin-top: 30px;
+      }
+
+      .species-card {
+        background: #f8f9ff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+        transition: transform 0.2s ease;
+      }
+
+      .species-card:hover {
+        transform: translateX(5px);
+      }
+
+      .species-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .scientific-name {
+        font-style: italic;
+        color: #666;
+        margin-bottom: 10px;
+      }
+
+      .confidence {
+        background: #667eea;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 15px;
+        font-size: 12px;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+
+      .description {
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .taxonomy-type {
+        background: #e8f5e8;
+        color: #2d5a2d;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        display: inline-block;
+        margin-bottom: 10px;
+        margin-left: 10px;
+        font-weight: bold;
+      }
+
+      .taxonomy-type.fauna {
+        background: #fff3e0;
+        color: #e65100;
+      }
+
+      .taxonomy-type.flora {
+        background: #e8f5e8;
+        color: #2e7d32;
+      }
+
+      .taxonomy-type.fungi {
+        background: #f3e5f5;
+        color: #7b1fa2;
+      }
+
+      .error {
+        background: #ffe6e6;
+        color: #d63031;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #d63031;
       }
     </style>
   </head>
   <body>
-    <h1>Reconocimiento Específico de Flora y Fauna</h1>
-    <p>Sube una imagen y detectaremos la especie lo más específica posible.</p>
+    <div class="container">
+      <h1>🌿 Identificador de Especies 🦋</h1>
 
-    <input type="file" id="imagenInput" accept="image/*" />
-    <button id="btnAnalizar" disabled>Analizar Imagen</button>
+      <div
+        class="upload-area"
+        onclick="document.getElementById('fileInput').click()"
+      >
+        <p>
+          📸 Haz clic aquí o arrastra una imagen para identificar flora y fauna
+        </p>
+        <p style="font-size: 14px; color: #666">
+          Formatos: JPG, PNG, WebP<br />
+          <em>Solo identifica organismos vivos: plantas, animales u hongos</em>
+        </p>
+      </div>
 
-    <div id="resultado"></div>
+      <input type="file" id="fileInput" accept="image/*" />
+
+      <div
+        class="preview-container"
+        id="previewContainer"
+        style="display: none"
+      >
+        <img id="imagePreview" alt="Vista previa" />
+        <button id="identifyBtn" onclick="identifySpecies()">
+          🔍 Identificar Especie
+        </button>
+      </div>
+
+      <div id="loading" class="loading" style="display: none">
+        <p>🔄 Analizando imagen...</p>
+      </div>
+
+      <div id="results" class="results"></div>
+    </div>
 
     <script>
-      const API_KEY = "AIzaSyBV9M7KOEjza-_gXT1Q_lxkofnXhQuMYoI"; // Reemplaza con tu clave válida
+      const fileInput = document.getElementById("fileInput");
+      const uploadArea = document.querySelector(".upload-area");
+      const previewContainer = document.getElementById("previewContainer");
+      const imagePreview = document.getElementById("imagePreview");
+      const identifyBtn = document.getElementById("identifyBtn");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
 
-      const imagenInput = document.getElementById("imagenInput");
-      const btnAnalizar = document.getElementById("btnAnalizar");
-      const resultadoDiv = document.getElementById("resultado");
+      // Drag and drop functionality
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
 
-      let base64Image = "";
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
 
-      const palabrasClaveFlora = [
-        "plant",
-        "tree",
-        "flower",
-        "grass",
-        "moss",
-        "fungus",
-        "leaf",
-        "bush",
-        "weed",
-        "flora",
-        "herb",
-        "shrub",
-        "fungi",
-        "algae",
-        "planta",
-        "árbol",
-        "flor",
-        "hierba",
-        "musgo",
-        "hongo",
-        "hoja",
-        "arbusto",
-        "maleza",
-        "arbusto",
-        "hongos",
-        "algas",
-      ];
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFile(files[0]);
+        }
+      });
 
-      const palabrasClaveFauna = [
-        "animal",
-        "bird",
-        "mammal",
-        "fish",
-        "reptile",
-        "amphibian",
-        "insect",
-        "arachnid",
-        "fauna",
-        "animal",
-        "ave",
-        "mamífero",
-        "pez",
-        "reptil",
-        "anfibio",
-        "insecto",
-        "arácnido",
-        "serpent",
-        "snake",
-      ];
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          handleFile(e.target.files[0]);
+        }
+      });
 
-      function determinarTipo(texto) {
-        texto = texto.toLowerCase();
-        if (palabrasClaveFlora.some((p) => texto.includes(p))) return "Flora";
-        if (palabrasClaveFauna.some((p) => texto.includes(p))) return "Fauna";
-        return null;
+      function handleFile(file) {
+        if (!file.type.startsWith("image/")) {
+          alert("Por favor selecciona una imagen válida");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreview.src = e.target.result;
+          previewContainer.style.display = "block";
+          results.innerHTML = "";
+        };
+        reader.readAsDataURL(file);
       }
 
-      function determinarTipoDesdeExtracto(extract) {
-        if (!extract) return null;
-        const texto = extract.toLowerCase();
-
-        const floraKeys = [
-          "planta",
-          "árbol",
-          "flor",
-          "hierba",
-          "musgo",
-          "hongo",
-          "algas",
-          "arbusto",
-          "vegetal",
-          "flora",
-        ];
-        const faunaKeys = [
-          "animal",
-          "ave",
-          "mamífero",
-          "pez",
-          "reptil",
-          "anfibio",
-          "insecto",
-          "serpiente",
-          "araña",
-          "invertebrado",
-          "mariposa",
-          "crustáceo",
-          "lagarto",
-          "rata",
-          "ratón",
-          "cangrejo",
-          "tiburón",
-          "perro",
-          "gato",
-          "lagarto",
-          "amphibian",
-          "reptile",
-          "bird",
-          "mammal",
-          "fish",
-          "insect",
-        ];
-
-        for (const f of faunaKeys) {
-          if (texto.includes(f)) return "Fauna";
+      async function identifySpecies() {
+        const file = fileInput.files[0];
+        if (!file) {
+          alert("Por favor selecciona una imagen primero");
+          return;
         }
-        for (const f of floraKeys) {
-          if (texto.includes(f)) return "Flora";
+
+        loading.style.display = "block";
+        results.innerHTML = "";
+        identifyBtn.disabled = true;
+
+        try {
+          // Redimensionar imagen si es muy grande
+          const resizedFile = await resizeImage(file, 800, 600);
+
+          // Tu API key configurada
+          const apiKey =
+            "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo5NjA4MDgwLCJleHAiOjE3NTQzMzk2MTJ9.YXtwHUpZoRiLP1CAouoiNygRTBlUpVqzV8ipnD0kHeRWsD1-Psa341Iip7dGbfNPA_CYzNJSPo6Y85j7Et5RTg";
+
+          // Método 1: Usar Computer Vision con tu API key
+          if (apiKey) {
+            try {
+              const visionData = await identifyWithComputerVision(
+                resizedFile,
+                apiKey
+              );
+              if (
+                visionData &&
+                visionData.results &&
+                visionData.results.length > 0
+              ) {
+                await processVisionResults(visionData.results);
+                return;
+              }
+            } catch (error) {
+              console.warn("Computer Vision falló:", error);
+
+              // Si el token expiró, mostrar mensaje específico
+              if (
+                error.message.includes("401") ||
+                error.message.includes("Unauthorized")
+              ) {
+                results.innerHTML = `
+                                <div class="error">
+                                    <strong>⏰ Token expirado</strong><br>
+                                    Tu API token ha expirado (duran 24 horas).<br><br>
+                                    <strong>Solución:</strong><br>
+                                    1. Ve a <a href="https://www.inaturalist.org/users/api_token" target="_blank">inaturalist.org/users/api_token</a><br>
+                                    2. Copia el nuevo token<br>
+                                    3. Actualiza el código con el nuevo token<br><br>
+                                    <em>Mientras tanto, puedes usar la búsqueda manual...</em>
+                                </div>
+                            `;
+                await identifyWithSearch(resizedFile);
+                return;
+              }
+
+              // Otros errores, continuar con búsqueda manual
+              await identifyWithSearch(resizedFile);
+              return;
+            }
+          }
+
+          // Método 2: Buscar por similitudes usando la API de búsqueda (sin autenticación)
+          await identifyWithSearch(resizedFile);
+        } catch (error) {
+          console.error("Error completo:", error);
+
+          let errorMessage = "Error desconocido";
+
+          if (error.message.includes("401")) {
+            errorMessage =
+              "API Key requerida para Computer Vision. Usa el método de búsqueda alternativo o proporciona una API Key válida.";
+          } else if (
+            error.name === "TypeError" &&
+            error.message.includes("fetch")
+          ) {
+            errorMessage = "Problema de conexión. Verifica tu internet.";
+          } else {
+            errorMessage = error.message;
+          }
+
+          results.innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong> ${errorMessage}
+                        <br><br>
+                        <strong>Soluciones:</strong>
+                        <ul style="margin-top: 10px; text-align: left;">
+                            <li>Obtén una API Key gratuita en <a href="https://www.inaturalist.org/users/api_token" target="_blank">iNaturalist</a></li>
+                            <li>O usa el método de búsqueda sin autenticación</li>
+                            <li>Verifica tu conexión a internet</li>
+                        </ul>
+                    </div>
+                `;
+        } finally {
+          loading.style.display = "none";
+          identifyBtn.disabled = false;
         }
-        return null;
       }
 
-      async function obtenerUbicacion(lat, lon) {
+      // Método con Computer Vision (requiere API key)
+      async function identifyWithComputerVision(file, apiKey) {
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const response = await fetch(
+          "https://api.inaturalist.org/v1/computervision/score_image",
+          {
+            method: "POST",
+            body: formData,
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Error HTTP ${response.status}: ${response.statusText}`
+          );
+        }
+
+        return await response.json();
+      }
+
+      // Método alternativo: búsqueda manual por características
+      async function identifyWithSearch(file) {
+        // Mostrar opciones de búsqueda manual
+        results.innerHTML = `
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-left: 4px solid #2196f3;">
+                    <h3>🔍 Identificación Manual</h3>
+                    <p>Sin API Key, puedes buscar especies manualmente. ¿Qué tipo de organismo es?</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px;">
+                        <button onclick="searchByType('Plantae')" style="background: #4caf50; margin: 5px;">🌱 Planta</button>
+                        <button onclick="searchByType('Animalia')" style="background: #ff9800; margin: 5px;">🐛 Animal</button>
+                        <button onclick="searchByType('Fungi')" style="background: #9c27b0; margin: 5px;">🍄 Hongo</button>
+                        <button onclick="searchByType('Aves')" style="background: #03a9f4; margin: 5px;">🐦 Ave</button>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <input type="text" id="manualSearch" placeholder="O escribe el nombre de la especie..." 
+                               style="width: 70%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button onclick="searchByName()" style="width: 25%; margin-left: 5px;">Buscar</button>
+                    </div>
+                </div>
+            `;
+      }
+
+      // Buscar por tipo de organismo
+      async function searchByType(iconicTaxon) {
         try {
           const response = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`
+            `https://api.inaturalist.org/v1/taxa?iconic_taxa=${iconicTaxon}&per_page=5&order=desc&order_by=observations_count`
           );
           const data = await response.json();
 
-          let ubicacion = [];
-          if (data.locality) ubicacion.push(data.locality);
-          if (data.principalSubdivision)
-            ubicacion.push(data.principalSubdivision);
-          if (data.countryName) ubicacion.push(data.countryName);
-
-          return ubicacion.length > 0
-            ? ubicacion.join(", ")
-            : "Ubicación no identificada";
-        } catch (error) {
-          console.error("Error al obtener ubicación:", error);
-          return "Error al obtener ubicación";
-        }
-      }
-
-      imagenInput.addEventListener("change", () => {
-        if (imagenInput.files.length > 0) {
-          btnAnalizar.disabled = false;
-          resultadoDiv.innerHTML = "";
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            base64Image = e.target.result.split(",")[1];
-            resultadoDiv.innerHTML = `<img src="${e.target.result}" alt="Imagen subida" />`;
-          };
-          reader.readAsDataURL(imagenInput.files[0]);
-        } else {
-          btnAnalizar.disabled = true;
-          base64Image = "";
-          resultadoDiv.innerHTML = "";
-        }
-      });
-
-      btnAnalizar.addEventListener("click", () => {
-        if (!base64Image) return;
-
-        resultadoDiv.innerHTML = `<p><em>Obteniendo ubicación...</em></p>`;
-
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const lat = position.coords.latitude.toFixed(6);
-              const lon = position.coords.longitude.toFixed(6);
-
-              const ubicacionLegible = await obtenerUbicacion(lat, lon);
-
-              resultadoDiv.innerHTML += `<p><strong>Coordenadas:</strong> Latitud ${lat}, Longitud ${lon}</p>`;
-              resultadoDiv.innerHTML += `<p><strong>Ubicación:</strong> ${ubicacionLegible}</p>`;
-              analizarImagen(lat, lon);
-            },
-            (error) => {
-              resultadoDiv.innerHTML += `<p><strong>Ubicación:</strong> No disponible (${error.message})</p>`;
-              analizarImagen(null, null);
-            }
-          );
-        } else {
-          resultadoDiv.innerHTML += `<p><strong>Ubicación:</strong> No compatible con este navegador.</p>`;
-          analizarImagen(null, null);
-        }
-      });
-
-      function analizarImagen(lat, lon) {
-        resultadoDiv.innerHTML += `<p><em>Analizando imagen...</em></p>`;
-
-        fetch(
-          `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              requests: [
-                {
-                  image: { content: base64Image },
-                  features: [
-                    { type: "WEB_DETECTION", maxResults: 10 },
-                    { type: "LABEL_DETECTION", maxResults: 5 },
-                  ],
-                },
-              ],
-            }),
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            resultadoDiv.innerHTML += `<img src="data:image/jpeg;base64,${base64Image}" alt="Imagen subida" />`;
-
-            if (data.error) {
-              resultadoDiv.innerHTML += `<p><strong>Error:</strong> ${data.error.message}</p>`;
-              return;
-            }
-
-            const webEntities =
-              data.responses[0].webDetection?.webEntities || [];
-            const labels = data.responses[0].labelAnnotations || [];
-
-            let nombreDetectado = null;
-            let score = 0;
-
-            if (webEntities.length > 0 && webEntities[0].description) {
-              const mejor = webEntities.reduce((a, b) =>
-                (a.score || 0) > (b.score || 0) ? a : b
-              );
-              nombreDetectado = mejor.description;
-              score = ((mejor.score || 0) * 100).toFixed(1);
-            } else if (labels.length > 0 && labels[0].description) {
-              const mejorLabel = labels[0];
-              nombreDetectado = mejorLabel.description;
-              score = ((mejorLabel.score || 0) * 100).toFixed(1);
-            }
-
-            if (!nombreDetectado) {
-              resultadoDiv.innerHTML += `<p>No se detectaron especies con suficiente certeza.</p>`;
-              return;
-            }
-
-            const todasDescripciones = [
-              ...webEntities.map((w) => w.description),
-              ...labels.map((l) => l.description),
-            ]
-              .filter(Boolean)
-              .map((d) => d.toLowerCase());
-
-            const tipoInicial = determinarTipo(
-              todasDescripciones.find((desc) => {
-                return determinarTipo(desc) !== null;
-              }) || ""
+          if (data.results && data.results.length > 0) {
+            displaySearchResults(
+              data.results,
+              `Especies comunes - ${getIconicTaxonName(iconicTaxon)}`
             );
-
-            resultadoDiv.innerHTML += `<h3>Resultado más probable:</h3>
-              <p><strong>${nombreDetectado}</strong> (confianza: ${score}%)</p>
-              <p><strong>Tipo (inicial):</strong> ${
-                tipoInicial || "Desconocido"
-              }</p>
-              <p><em>Buscando información adicional...</em></p>`;
-
-            buscarEnWikipedia(nombreDetectado, "es")
-              .then(async (info) => {
-                const tipoWikipedia = determinarTipoDesdeExtracto(info.extract);
-
-                // Obtener nombre científico desde HTML
-                const nombreCientificoHTML =
-                  await obtenerNombreCientificoDesdeHTML(
-                    info.title || nombreDetectado
-                  );
-
-                mostrarDescripcion(
-                  nombreDetectado,
-                  { ...info, nombreCientificoHTML },
-                  "es",
-                  tipoWikipedia || tipoInicial
-                );
-              })
-              .catch(() => {
-                buscarEnWikipedia(nombreDetectado, "en")
-                  .then((info) => {
-                    traducir(info.extract).then((descripcionTraducida) => {
-                      info.extract = descripcionTraducida;
-                      const tipoWikipedia = determinarTipoDesdeExtracto(
-                        info.extract
-                      );
-                      mostrarDescripcion(
-                        nombreDetectado,
-                        info,
-                        "es",
-                        tipoWikipedia || tipoInicial
-                      );
-                    });
-                  })
-                  .catch(() => {
-                    resultadoDiv.innerHTML += `
-                      <p><strong>No se encontró información en Wikipedia.</strong></p>
-                      <p><a href="https://www.google.com/search?q=${encodeURIComponent(
-                        nombreDetectado
-                      )}" target="_blank">🔎 Buscar "${nombreDetectado}" en Google</a></p>
-                    `;
-                  });
-              });
-          })
-          .catch((err) => {
-            console.error("Error al analizar la imagen:", err);
-            resultadoDiv.innerHTML += `<p>Error al analizar la imagen: ${err}</p>`;
-          });
+          }
+        } catch (error) {
+          console.error("Error en búsqueda por tipo:", error);
+        }
       }
 
-      function buscarEnWikipedia(nombre, idioma) {
-        return fetch(
-          `https://${idioma}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(
-            nombre
-          )}`
-        ).then((res) => {
-          if (!res.ok) throw new Error("No encontrado");
-          return res.json();
+      // Buscar por nombre
+      async function searchByName() {
+        const searchTerm = document.getElementById("manualSearch").value.trim();
+        if (!searchTerm) return;
+
+        try {
+          const response = await fetch(
+            `https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(
+              searchTerm
+            )}&per_page=3`
+          );
+          const data = await response.json();
+
+          if (data.results && data.results.length > 0) {
+            displaySearchResults(
+              data.results,
+              `Resultados para "${searchTerm}"`
+            );
+          } else {
+            results.innerHTML +=
+              '<div class="error">No se encontraron especies con ese nombre.</div>';
+          }
+        } catch (error) {
+          console.error("Error en búsqueda por nombre:", error);
+        }
+      }
+
+      // Traducir nombres de grupos taxonómicos
+      function getIconicTaxonName(iconicTaxon) {
+        const translations = {
+          Plantae: "Plantas",
+          Animalia: "Animales",
+          Fungi: "Hongos",
+          Aves: "Aves",
+        };
+        return translations[iconicTaxon] || iconicTaxon;
+      }
+
+      // Mostrar resultados de búsqueda
+      function displaySearchResults(species, title) {
+        // Filtrar solo especies válidas (flora, fauna, fungi)
+        const validSpecies = species.filter((specie) => {
+          const iconic = specie.iconic_taxon_name;
+          return (
+            iconic === "Plantae" ||
+            iconic === "Animalia" ||
+            iconic === "Aves" ||
+            iconic === "Insecta" ||
+            iconic === "Mammalia" ||
+            iconic === "Reptilia" ||
+            iconic === "Amphibia" ||
+            iconic === "Fungi" ||
+            iconic === "Actinopterygii" ||
+            iconic === "Arachnida" ||
+            iconic === "Mollusca"
+          );
+        });
+
+        if (validSpecies.length === 0) {
+          results.innerHTML += `
+            <div class="error">
+              <strong>⚠️ No se encontraron especies válidas</strong><br>
+              Los resultados no contienen flora, fauna u hongos reconocibles.
+            </div>
+          `;
+          return;
+        }
+
+        const resultsHTML = validSpecies
+          .map((specie) => {
+            const spanishName = getSpanishName(specie);
+            const scientificName =
+              specie.name || "Nombre científico no disponible";
+            const description = getOriginalDescription(specie);
+            const taxonomyType = getTaxonomyType(specie);
+
+            return `
+                    <div class="species-card">
+                        <div class="species-name">${spanishName}</div>
+                        <div class="scientific-name">${scientificName}</div>
+                        ${taxonomyType}
+                        <div class="description">${description}</div>
+                        ${
+                          specie.default_photo
+                            ? `<img src="${specie.default_photo.square_url}" style="width: 80px; height: 80px; border-radius: 8px; margin-top: 10px;" alt="${spanishName}">`
+                            : ""
+                        }
+                    </div>
+                `;
+          })
+          .join("");
+
+        results.innerHTML = `
+                <h3>🎯 ${title}:</h3>
+                ${resultsHTML}
+            `;
+      }
+
+      // Procesar resultados de Computer Vision
+      async function processVisionResults(visionResults) {
+        try {
+          // Filtrar solo resultados que sean flora, fauna o fungi
+          const validResults = visionResults.filter((result) => {
+            const iconic = result.taxon.iconic_taxon_name;
+            return (
+              iconic === "Plantae" ||
+              iconic === "Animalia" ||
+              iconic === "Aves" ||
+              iconic === "Insecta" ||
+              iconic === "Mammalia" ||
+              iconic === "Reptilia" ||
+              iconic === "Amphibia" ||
+              iconic === "Fungi" ||
+              iconic === "Actinopterygii" ||
+              iconic === "Arachnida" ||
+              iconic === "Mollusca"
+            );
+          });
+
+          if (validResults.length === 0) {
+            results.innerHTML = `
+              <div class="error">
+                <strong>⚠️ No es flora ni fauna</strong><br>
+                La imagen no parece contener organismos vivos (plantas, animales u hongos).<br><br>
+                <strong>Sugerencias:</strong>
+                <ul style="margin-top: 10px; text-align: left;">
+                  <li>📸 Toma una foto de una planta, animal o hongo</li>
+                  <li>🔍 Asegúrate de que el organismo sea el elemento principal de la imagen</li>
+                  <li>💡 Evita objetos inanimados, personas o paisajes sin especies claras</li>
+                </ul>
+              </div>
+            `;
+            return;
+          }
+
+          // Solo tomar el resultado con mayor confianza de los válidos
+          const bestResult = validResults[0];
+
+          const taxaResponse = await fetch(
+            `https://api.inaturalist.org/v1/taxa/${bestResult.taxon.id}?locale=es`
+          );
+          if (!taxaResponse.ok) {
+            throw new Error("No se pudo obtener información de la especie");
+          }
+
+          const taxaData = await taxaResponse.json();
+          const species = taxaData.results[0];
+
+          const finalSpecies = {
+            ...species,
+            confidence: bestResult.combined_score,
+          };
+
+          // Mostrar solo el mejor resultado
+          displaySingleResult(finalSpecies);
+        } catch (error) {
+          console.error("Error obteniendo detalles de especie:", error);
+          results.innerHTML =
+            '<div class="error">No se pudo procesar la identificación de la especie.</div>';
+        }
+      }
+
+      // NUEVA FUNCIÓN: Determinar si es fauna, flora o fungi
+      function getTaxonomyType(specie) {
+        const iconic = specie.iconic_taxon_name;
+
+        // Determinar el tipo basado en el grupo taxonómico
+        if (iconic === "Plantae") {
+          return '<div class="taxonomy-type flora">🌱 FLORA</div>';
+        } else if (iconic === "Fungi") {
+          return '<div class="taxonomy-type fungi">🍄 FUNGI</div>';
+        } else if (
+          iconic === "Animalia" ||
+          iconic === "Aves" ||
+          iconic === "Insecta" ||
+          iconic === "Mammalia" ||
+          iconic === "Reptilia" ||
+          iconic === "Amphibia" ||
+          iconic === "Actinopterygii" ||
+          iconic === "Arachnida" ||
+          iconic === "Mollusca"
+        ) {
+          return '<div class="taxonomy-type fauna">🐾 FAUNA</div>';
+        } else {
+          // Para casos no clasificados, intentar determinar por ancestros
+          const ancestors = specie.ancestors || [];
+          for (let ancestor of ancestors) {
+            if (ancestor.name === "Plantae")
+              return '<div class="taxonomy-type flora">🌱 FLORA</div>';
+            if (ancestor.name === "Fungi")
+              return '<div class="taxonomy-type fungi">🍄 FUNGI</div>';
+            if (ancestor.name === "Animalia")
+              return '<div class="taxonomy-type fauna">🐾 FAUNA</div>';
+          }
+
+          // Si no se puede determinar, no mostrar nada
+          return "";
+        }
+      }
+
+      // NUEVA FUNCIÓN: Obtener descripción original hasta el primer punto
+      function getOriginalDescription(specie) {
+        // Primero intentar obtener la descripción de Wikipedia
+        if (specie.wikipedia_summary && specie.wikipedia_summary.length > 0) {
+          // Buscar el primer punto seguido de espacio o final de cadena
+          const firstSentence = specie.wikipedia_summary.match(/^[^.]*\./);
+          if (firstSentence) {
+            return firstSentence[0].trim();
+          }
+          // Si no encuentra punto, tomar hasta los primeros 200 caracteres
+          return specie.wikipedia_summary.substring(0, 200) + "...";
+        }
+
+        // Si no hay descripción de Wikipedia, usar la descripción básica
+        return getBasicSpanishDescription(specie);
+      }
+
+      // Función para traducir y resumir descripción (MODIFICADA)
+      async function translateAndSummarize(englishText, scientificName) {
+        // Ahora solo extraer hasta el primer punto
+        const firstSentence = englishText.match(/^[^.]*\./);
+        if (firstSentence) {
+          return firstSentence[0].trim();
+        }
+
+        // Si no encuentra punto, tomar hasta los primeros 200 caracteres
+        if (englishText.length > 200) {
+          return englishText.substring(0, 200) + "...";
+        }
+
+        return englishText;
+      }
+
+      // Traducción básica para términos científicos comunes
+      async function basicTranslate(text, scientificName) {
+        // Esta función ya no se usa, pero la mantengo por compatibilidad
+        return text;
+      }
+
+      // Función para redimensionar imágenes grandes
+      function resizeImage(file, maxWidth, maxHeight) {
+        return new Promise((resolve) => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          const img = new Image();
+
+          img.onload = () => {
+            // Calcular nuevas dimensiones
+            let { width, height } = img;
+
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width *= ratio;
+              height *= ratio;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // Dibujar imagen redimensionada
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Convertir a blob
+            canvas.toBlob(
+              (blob) => {
+                resolve(new File([blob], file.name, { type: file.type }));
+              },
+              file.type,
+              0.8
+            );
+          };
+
+          img.src = URL.createObjectURL(file);
         });
       }
 
-      async function traducir(texto) {
-        try {
-          const textoCorto =
-            texto.length > 500 ? texto.substring(0, 500) : texto;
-          const res = await fetch(
-            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-              textoCorto
-            )}&langpair=en|es`
-          );
-          const data = await res.json();
-          return data.responseData.translatedText;
-        } catch (e) {
-          return texto;
-        }
+      // Mostrar un solo resultado (el de mayor confianza) - MODIFICADO
+      function displaySingleResult(specie) {
+        const spanishName = getSpanishName(specie);
+        const scientificName = specie.name || "Nombre científico no disponible";
+        const description = getOriginalDescription(specie);
+        const confidence = Math.round(specie.confidence * 100);
+        const taxonomyType = getTaxonomyType(specie);
+
+        results.innerHTML = `
+                <div class="species-card">
+                    <div class="species-name">${spanishName}</div>
+                    <div class="scientific-name">${scientificName}</div>
+                    <div class="confidence">Confianza: ${confidence}%</div>
+                    ${taxonomyType}
+                    <div class="description">${description}</div>
+                </div>
+            `;
       }
 
-      function obtenerNombreComunDesdeExtracto(extract, nombreCientifico) {
-        if (!extract) return nombreCientifico || "No disponible";
+      // Obtener nombre común en español
+      function getSpanishName(specie) {
+        // Buscar nombres en español en las traducciones
+        if (specie.names && specie.names.length > 0) {
+          // Buscar específicamente nombres en español
+          const spanishNames = specie.names.filter(
+            (name) =>
+              name.locale === "es" ||
+              name.locale === "es-MX" ||
+              name.locale === "es-ES"
+          );
 
-        const primeraOracion = extract.split(".")[0];
+          if (spanishNames.length > 0) {
+            return spanishNames[0].name;
+          }
 
-        let regex =
-          /^(La|El|Los|Las|Un|Una)?\s*([\w\sáéíóúüñ\-]+?),?\s*(también llamada|es una especie de|es un|es una|es el|es la|es los|es las)/i;
-        let match = primeraOracion.match(regex);
-        if (match && match[2]) {
-          return match[2].trim();
-        }
-
-        const palabras = primeraOracion.split(/\s+/);
-        for (let palabra of palabras) {
-          if (
-            /^[A-ZÁÉÍÓÚÜÑ]/.test(palabra) &&
-            !["La", "El", "Los", "Las", "Un", "Una"].includes(palabra)
-          ) {
-            return palabra.replace(/[.,;:()"]/g, "");
+          // Si no hay español, buscar nombres comunes en general
+          const commonNames = specie.names.filter(
+            (name) => name.locale === "en"
+          );
+          if (commonNames.length > 0) {
+            return translateCommonName(commonNames[0].name);
           }
         }
 
-        return nombreCientifico || "No disponible";
+        // Fallback al preferred_common_name
+        if (specie.preferred_common_name) {
+          return translateCommonName(specie.preferred_common_name);
+        }
+
+        // Último recurso: crear nombre descriptivo
+        return createDescriptiveName(specie);
       }
 
-      async function obtenerNombreCientificoDesdeHTML(titulo) {
-        try {
-          const response = await fetch(
-            `https://es.wikipedia.org/wiki/${encodeURIComponent(titulo)}`
-          );
-          if (!response.ok) throw new Error("No encontrado");
+      // Traducir nombres comunes básicos
+      function translateCommonName(englishName) {
+        const nameTranslations = {
+          // Plantas
+          Oak: "Roble",
+          Pine: "Pino",
+          Rose: "Rosa",
+          Sunflower: "Girasol",
+          Daisy: "Margarita",
+          Lily: "Lirio",
+          Tulip: "Tulipán",
+          Cactus: "Cactus",
+          Aloe: "Aloe",
+          Fern: "Helecho",
+          Moss: "Musgo",
+          Grass: "Hierba",
+          Tree: "Árbol",
+          Shrub: "Arbusto",
+          Herb: "Hierba",
 
-          const html = await response.text();
+          // Animales
+          Dog: "Perro",
+          Cat: "Gato",
+          Bird: "Ave",
+          Butterfly: "Mariposa",
+          Bee: "Abeja",
+          Ant: "Hormiga",
+          Spider: "Araña",
+          Beetle: "Escarabajo",
+          Fly: "Mosca",
+          Moth: "Polilla",
+          Dragonfly: "Libélula",
+          Ladybug: "Mariquita",
+          Grasshopper: "Saltamontes",
+          Cricket: "Grillo",
+          Frog: "Rana",
+          Lizard: "Lagarto",
+          Snake: "Serpiente",
+          Fish: "Pez",
+          Mouse: "Ratón",
+          Rabbit: "Conejo",
+        };
 
-          const regex =
-            /<h1[^>]*id="firstHeading"[^>]*>.*?<span class="mw-page-title-main">([^<]+)<\/span>.*?<\/h1>/i;
-          const match = html.match(regex);
-
-          if (match && match[1]) {
-            return match[1].trim();
-          } else {
-            return "No disponible";
+        // Buscar traducción exacta
+        for (const [english, spanish] of Object.entries(nameTranslations)) {
+          if (englishName.toLowerCase().includes(english.toLowerCase())) {
+            return (spanishName = englishName.replace(
+              new RegExp(english, "gi"),
+              spanish
+            ));
           }
-        } catch (e) {
-          console.error("Error al obtener nombre científico desde HTML:", e);
-          return "No disponible";
+        }
+
+        // Si no encuentra traducción, devolver el original
+        return englishName;
+      }
+
+      // Crear nombre descriptivo basado en taxonomía
+      function createDescriptiveName(specie) {
+        const iconic = specie.iconic_taxon_name;
+
+        switch (iconic) {
+          case "Plantae":
+            return "Planta no identificada";
+          case "Animalia":
+            return "Animal no identificado";
+          case "Aves":
+            return "Ave no identificada";
+          case "Insecta":
+            return "Insecto no identificado";
+          case "Fungi":
+            return "Hongo no identificado";
+          case "Mammalia":
+            return "Mamífero no identificado";
+          case "Reptilia":
+            return "Reptil no identificado";
+          case "Amphibia":
+            return "Anfibio no identificado";
+          default:
+            return "Especie no identificada";
         }
       }
 
-      function mostrarDescripcion(nombre, data, idioma, tipoFinal) {
-        const nombreCientifico = data.nombreCientificoHTML || "No disponible";
+      // Descripción básica en español
+      function getBasicSpanishDescription(specie) {
+        const iconic = specie.iconic_taxon_name;
+        const scientificName = specie.name;
 
-        const nombreComun = obtenerNombreComunDesdeExtracto(
-          data.extract,
-          nombre
+        const descriptions = {
+          Plantae: `${scientificName} es una especie de planta. Las plantas son organismos fotosintéticos fundamentales para los ecosistemas terrestres.`,
+          Aves: `${scientificName} es una especie de ave. Las aves son vertebrados con plumas que desempeñan roles importantes en la dispersión de semillas y control de insectos.`,
+          Insecta: `${scientificName} es una especie de insecto. Los insectos son el grupo más diverso de animales y son cruciales para la polinización y descomposición.`,
+          Mammalia: `${scientificName} es una especie de mamífero. Los mamíferos son vertebrados de sangre caliente que amamantan a sus crías.`,
+          Fungi: `${scientificName} es una especie de hongo. Los hongos descomponen materia orgánica y forman asociaciones simbióticas con plantas.`,
+          Reptilia: `${scientificName} es una especie de reptil. Los reptiles son vertebrados de sangre fría con piel escamosa.`,
+          Amphibia: `${scientificName} es una especie de anfibio. Los anfibios tienen una piel permeable y generalmente requieren agua para reproducirse.`,
+        };
+
+        return (
+          descriptions[iconic] ||
+          `${scientificName} es una especie registrada en la base de datos científica de biodiversidad.`
         );
-
-        const descripcionCorta = data.extract
-          ? data.extract.split(".")[0] + "."
-          : "No hay descripción disponible.";
-
-        resultadoDiv.innerHTML += `
-          <h4>Información de Wikipedia:</h4>
-          <p><strong>Nombre común:</strong> ${nombreComun}</p>
-          <p><strong>Nombre científico:</strong> ${nombreCientifico}</p>
-          <p><strong>Tipo (ajustado):</strong> ${tipoFinal || "Desconocido"}</p>
-          <p>${descripcionCorta}</p>
-        `;
       }
     </script>
   </body>

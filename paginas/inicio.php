@@ -132,10 +132,6 @@
                   <i class="fas fa-camera me-2"></i>
                   <span class="d-none d-sm-inline">Capturar </span>Foto
                 </button>
-                <button class="btn btn-info" id="captureLens">
-                  <i class="fas fa-glasses me-2"></i>
-                  <span class="d-none d-sm-inline">Capturar con </span>Lentes
-                </button>
                 <button class="btn btn-camera" id="stopCamera" disabled>
                   <i class="fas fa-stop me-2"></i>
                   <span class="d-none d-sm-inline">Detener</span>

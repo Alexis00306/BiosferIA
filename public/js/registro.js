@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_KEY = "AIzaSyBV9M7KOEjza-_gXT1Q_lxkofnXhQuMYoI"; // Reemplaza con tu API Key Google Vision
+  // Reemplaza con tu API Key de iNaturalist (dura 24 horas)
+  const INATURALIST_API_KEY = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo5NjA4MDgwLCJleHAiOjE3NTQ3MDAzOTV9.zp-4SdPxQgOZH43m4Oyn8FylK5lP6eBKYtUtCLcol29yjdjwXRPGnEEukjBdblziGVr4DboxZifrPPnCN4q6dA";
 
   let fotoBlob = null;
   let camStream = null;
@@ -165,49 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Función para capitalizar primera letra
-  function capitalizarPrimeraLetra(texto) {
-    if (!texto) return "";
-    return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
-  }
-
-  // Función MEJORADA para formatear nombre científico (formato binomial)
-  function formatearNombreCientifico(nombre) {
-    if (!nombre) return "";
-    
-    // Limpiar el nombre de caracteres extraños y espacios múltiples
-    let nombreLimpio = nombre.trim()
-      .replace(/['"()]/g, '') // Quitar comillas y paréntesis
-      .replace(/\s+/g, ' ') // Normalizar espacios
-      .replace(/[^a-zA-Z\s]/g, ''); // Solo letras y espacios
-    
-    // Separar por espacios
-    const partes = nombreLimpio.split(/\s+/).filter(p => p.length > 0);
-    
-    if (partes.length >= 2) {
-      // Validar que tenga formato científico: Primera palabra capitalizada, resto minúsculas
-      const genero = partes[0].charAt(0).toUpperCase() + partes[0].slice(1).toLowerCase();
-      const especie = partes[1].toLowerCase();
-      
-      // Verificar que no sean palabras comunes en español/inglés
-      const palabrasComunes = ['the', 'and', 'or', 'is', 'are', 'la', 'el', 'y', 'o', 'es', 'son', 'de', 'del'];
-      if (palabrasComunes.includes(genero.toLowerCase()) || palabrasComunes.includes(especie.toLowerCase())) {
-        return capitalizarPrimeraLetra(nombreLimpio);
-      }
-      
-      // Formar nombre científico: Género especie [subespecie]
-      let nombreFinal = genero + " " + especie;
-      if (partes.length > 2) {
-        // Agregar subspecies/variedad si existe
-        nombreFinal += " " + partes.slice(2).map(p => p.toLowerCase()).join(" ");
-      }
-      
-      return nombreFinal;
-    }
-    
-    return capitalizarPrimeraLetra(nombreLimpio);
-  }
-
   // Mostrar / Ocultar modal
   function mostrarModalReconociendo(show) {
     const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalReconociendo'));
@@ -317,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
   stopCameraBtn.addEventListener("click", apagarCamara);
 
   // Capturar foto - MEJORADO para móviles
-  capturePhotoBtn.addEventListener("click", () => {
+  capturePhotoBtn.addEventListener("click", async () => {
     if (!camStream || !videoElement) {
       mostrarAlerta("La cámara no está activa", "warning");
       return;
@@ -334,15 +292,43 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const canvas = document.createElement("canvas");
       
-      // Usar las dimensiones reales del video
-      const videoWidth = videoElement.videoWidth || videoElement.offsetWidth || 640;
-      const videoHeight = videoElement.videoHeight || videoElement.offsetHeight || 480;
+      // USAR DIMENSIONES DEL CONTENEDOR, NO DEL VIDEO ORIGINAL
+      const containerWidth = cameraPreview.clientWidth;
+      const containerHeight = cameraPreview.clientHeight;
       
-      canvas.width = videoWidth;
-      canvas.height = videoHeight;
+      console.log('📐 Dimensiones del contenedor:', containerWidth, 'x', containerHeight);
+      console.log('📐 Dimensiones del video:', videoElement.videoWidth, 'x', videoElement.videoHeight);
+      
+      // Configurar canvas con las dimensiones del contenedor
+      canvas.width = containerWidth;
+      canvas.height = containerHeight;
       
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(videoElement, 0, 0, videoWidth, videoHeight);
+      
+      // Calcular cómo está escalado y centrado el video dentro del contenedor
+      const videoAspect = videoElement.videoWidth / videoElement.videoHeight;
+      const containerAspect = containerWidth / containerHeight;
+      
+      let drawWidth, drawHeight, offsetX, offsetY;
+      
+      if (videoAspect > containerAspect) {
+        // Video es más ancho, se ajusta por altura
+        drawHeight = containerHeight;
+        drawWidth = drawHeight * videoAspect;
+        offsetX = (containerWidth - drawWidth) / 2;
+        offsetY = 0;
+      } else {
+        // Video es más alto, se ajusta por ancho
+        drawWidth = containerWidth;
+        drawHeight = drawWidth / videoAspect;
+        offsetX = 0;
+        offsetY = (containerHeight - drawHeight) / 2;
+      }
+      
+      // Dibujar el video exactamente como se ve en el contenedor
+      ctx.drawImage(videoElement, offsetX, offsetY, drawWidth, drawHeight);
+      
+      console.log('📷 Captura con dimensiones:', canvas.width, 'x', canvas.height);
       
       canvas.toBlob(async (blob) => {
         if (!blob) {
@@ -354,29 +340,62 @@ document.addEventListener("DOMContentLoaded", () => {
         fotoBlob = blob;
         console.log('Foto capturada, tamaño:', blob.size);
         
-        // Obtener ubicación
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-              latitudInput.value = pos.coords.latitude.toFixed(6);
-              longitudInput.value = pos.coords.longitude.toFixed(6);
-              ubicacionInput.value = await obtenerUbicacion(pos.coords.latitude, pos.coords.longitude);
-              await analizarImagen(blob);
-            },
-            async () => {
-              latitudInput.value = "";
-              longitudInput.value = "";
-              ubicacionInput.value = "";
-              await analizarImagen(blob);
-            },
-            { timeout: 10000, enableHighAccuracy: false }
-          );
-        } else {
+        // OBTENER UBICACIÓN MEJORADO - SIEMPRE INTENTAR
+        try {
+          console.log('🗺️ Intentando obtener ubicación...');
+          const position = await new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+              reject(new Error('Geolocalización no disponible'));
+              return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+              resolve,
+              reject,
+              { 
+                timeout: 15000, // 15 segundos
+                enableHighAccuracy: false, // Más rápido
+                maximumAge: 300000 // Cache de 5 minutos
+              }
+            );
+          });
+          
+          // Si se obtuvo la ubicación exitosamente
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          
+          latitudInput.value = lat;
+          longitudInput.value = lon;
+          
+          console.log('✅ Coordenadas obtenidas:', lat, lon);
+          
+          try {
+            const ubicacionTexto = await obtenerUbicacion(position.coords.latitude, position.coords.longitude);
+            ubicacionInput.value = ubicacionTexto;
+            console.log('✅ Ubicación obtenida:', ubicacionTexto);
+          } catch (ubicError) {
+            console.log('❌ Error al obtener nombre de ubicación:', ubicError);
+            ubicacionInput.value = `${lat}, ${lon}`;
+          }
+          
+        } catch (geoError) {
+          console.log('❌ Error de geolocalización:', geoError);
           latitudInput.value = "";
           longitudInput.value = "";
           ubicacionInput.value = "";
-          await analizarImagen(blob);
+          
+          // Mostrar mensaje específico según el error
+          if (geoError.code === 1) {
+            console.log('Permisos de ubicación denegados');
+          } else if (geoError.code === 2) {
+            console.log('Posición no disponible');
+          } else if (geoError.code === 3) {
+            console.log('Timeout de ubicación');
+          }
         }
+        
+        // CONTINUAR CON ANÁLISIS DE IMAGEN
+        await analizarImagen(blob);
       }, "image/jpeg", 0.8);
       
     } catch (error) {
@@ -386,646 +405,545 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Obtener ubicación
+  // Obtener ubicación MEJORADA
   async function obtenerUbicacion(lat, lon) {
     try {
+      console.log(`🌍 Obteniendo ubicación para: ${lat}, ${lon}`);
+      
       const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`);
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      
       const data = await res.json();
+      console.log('📍 Datos de ubicación:', data);
+      
       const partes = [];
+      
+      // Construir ubicación en orden jerárquico
       if (data.locality) partes.push(data.locality);
+      if (data.city && data.city !== data.locality) partes.push(data.city);
       if (data.principalSubdivision) partes.push(data.principalSubdivision);
       if (data.countryName) partes.push(data.countryName);
-      return partes.join(", ") || "Ubicación no identificada";
-    } catch {
+      
+      const ubicacionFinal = partes.length > 0 ? partes.join(", ") : "Ubicación no identificada";
+      console.log('✅ Ubicación final:', ubicacionFinal);
+      
+      return ubicacionFinal;
+      
+    } catch (error) {
+      console.log('❌ Error al obtener ubicación:', error);
+      
+      // Fallback: intentar con otra API
+      try {
+        console.log('🔄 Intentando con API alternativa...');
+        const res2 = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=es`);
+        
+        if (res2.ok) {
+          const data2 = await res2.json();
+          const partes2 = [];
+          
+          if (data2.address) {
+            if (data2.address.city) partes2.push(data2.address.city);
+            if (data2.address.state) partes2.push(data2.address.state);
+            if (data2.address.country) partes2.push(data2.address.country);
+          }
+          
+          if (partes2.length > 0) {
+            console.log('✅ Ubicación obtenida con API alternativa:', partes2.join(", "));
+            return partes2.join(", ");
+          }
+        }
+      } catch (error2) {
+        console.log('❌ API alternativa también falló:', error2);
+      }
+      
       return "Error al obtener ubicación";
     }
   }
 
-  // Palabras clave para flora y fauna (inglés y español)
-  const palabrasClaveFlora = [
-    "plant","tree","flower","grass","moss","fungus","leaf","bush","weed","flora","herb","shrub","fungi","algae",
-    "planta","árbol","flor","hierba","musgo","hongo","hoja","arbusto","maleza","hongos","algas"
-  ];
-
-  const palabrasClaveFauna = [
-    "animal","bird","mammal","fish","reptile","amphibian","insect","arachnid","fauna","ave",
-    "mamífero","pez","reptil","anfibio","insecto","arácnido","serpent","snake"
-  ];
-
-  function determinarTipo(texto) {
-    texto = texto.toLowerCase();
-    if (palabrasClaveFlora.some(p => texto.includes(p))) return "flora";
-    if (palabrasClaveFauna.some(p => texto.includes(p))) return "fauna";
-    return null;
+  // NUEVA FUNCIÓN: Función para capitalizar primera letra
+  function capitalizarPrimeraLetra(texto) {
+    if (!texto) return "";
+    return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
   }
 
-  // Función para validar si es un nombre científico real
-  function esNombreCientificoValido(nombre) {
-    if (!nombre) return false;
-    
-    const nombreLimpio = nombre.trim();
-    const partes = nombreLimpio.split(/\s+/);
-    
-    if (partes.length < 2) return false;
-    
-    if (!/^[A-Z][a-z]+$/.test(partes[0]) || !/^[a-z]+$/.test(partes[1])) return false;
-    
-    const nombresComunes = [
-      'red rose', 'white oak', 'black bear', 'blue jay', 'green tree', 'yellow flower',
-      'common oak', 'house cat', 'tree frog', 'grass snake', 'field mouse', 'garden rose',
-      'wild rose', 'pine tree', 'oak tree', 'maple tree', 'apple tree', 'cherry tree',
-      'house plant', 'water lily', 'sun flower', 'corn plant', 'bean plant', 'grape vine',
-      'house spider', 'wood duck', 'sea turtle', 'tree bark', 'leaf green', 'flower red'
-    ];
-    
-    const nombreCompleto = nombreLimpio.toLowerCase();
-    if (nombresComunes.includes(nombreCompleto)) return false;
-    
-    const palabrasProhibidas = ['tree', 'plant', 'flower', 'animal', 'bird', 'fish', 'snake', 'frog', 'spider', 'leaf', 'grass', 'moss', 'wood', 'water', 'house', 'garden', 'wild', 'common', 'black', 'white', 'red', 'blue', 'green', 'yellow'];
-    
-    for (const parte of partes) {
-      if (palabrasProhibidas.includes(parte.toLowerCase())) {
-        return false;
-      }
-    }
-    
-    return true;
-  }
-
-  // FUNCIÓN MEJORADA para extraer nombre común del extracto
-  function obtenerNombreComunDesdeExtracto(extract, nombreCientifico) {
-    if (!extract) return nombreCientifico || "No disponible";
-
-    const primeraOracion = extract.split(".")[0];
-
-    const patrones = [
-      /^(La|El|Los|Las|Un|Una)?\s*([A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ\s]+?)\s*\([A-Z][a-z]+\s+[a-z]+\)/,
-      /^(La|El|Los|Las|Un|Una)?\s*([A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ\s]+?)\s*[,.]?\s*(también llamad[oa]|es una especie de|es un|es una|es el|es la)/i,
-      /^([A-Z][a-zA-Z\s]+?)\s*\([A-Z][a-z]+\s+[a-z]+\)/,
-      /^(The|La|El|Los|Las|Un|Una)?\s*([A-Z][a-zA-Z\s]+?)(\s+(is|are|es|son)\s+)/i,
-      /^(The|La|El|Los|Las|Un|Una)?\s*([A-Z][a-zA-Z\s]{2,25})/
-    ];
-
-    for (const patron of patrones) {
-      const match = primeraOracion.match(patron);
-      if (match && match[2]) {
-        let nombre = match[2].trim().replace(/[.,;:()"]/g, "");
-        nombre = nombre.replace(/\s+(is|are|es|son|also|también)$/i, "");
-        
-        if (nombre.length > 2 && nombre.length < 35 && !esNombreCientificoValido(nombre)) {
-          return capitalizarPrimeraLetra(nombre);
-        }
-      }
-    }
-
-    return capitalizarPrimeraLetra(nombreCientifico) || "No disponible";
-  }
-
-  // FUNCIÓN MEJORADA PARA EXTRAER NOMBRE CIENTÍFICO DEL TÍTULO
-  function extraerNombreCientificoDelTitulo(data) {
-    console.log("Título de Wikipedia:", data.title);
-    
-    if (data.extract) {
-      const patronesExtracto = [
-        /\(([A-Z][a-z]+\s+[a-z]+(?:\s+[a-z]+)*)\)/g,
-        /nombre científico:?\s*([A-Z][a-z]+\s+[a-z]+)/i,
-        /científicamente como\s+([A-Z][a-z]+\s+[a-z]+)/i,
-        /binomial:?\s*([A-Z][a-z]+\s+[a-z]+)/i
-      ];
-      
-      for (const patron of patronesExtracto) {
-        const matches = data.extract.matchAll ? Array.from(data.extract.matchAll(patron)) : [data.extract.match(patron)];
-        for (const match of matches) {
-          if (match && match[1] && esNombreCientificoValido(match[1])) {
-            console.log("✅ Nombre científico del extracto:", match[1]);
-            return match[1];
-          }
-        }
-      }
-    }
-    
-    if (data.title && esNombreCientificoValido(data.title.trim())) {
-      console.log("✅ Nombre científico del título:", data.title);
-      return data.title.trim();
-    }
-    
-    return null;
-  }
-
-  // Traducir texto
-  async function traducir(texto) {
-    try {
-      const textoCorto = texto.length > 500 ? texto.substring(0, 500) : texto;
-      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoCorto)}&langpair=en|es`);
-      const data = await res.json();
-      return data.responseData.translatedText;
-    } catch (e) {
-      return texto;
-    }
-  }
-
-  // Buscar en Wikipedia
-  function buscarEnWikipedia(nombre, idioma) {
-    return fetch(`https://${idioma}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(nombre)}`)
-      .then(res => {
-        if (!res.ok) throw new Error("No encontrado");
-        return res.json();
-      });
-  }
-
-  // Función para determinar tipo desde extracto Wikipedia
-  function determinarTipoDesdeExtracto(extract) {
-    if (!extract) return null;
-    const texto = extract.toLowerCase();
-
-    const floraKeys = [
-      "planta","árbol","flor","hierba","musgo","hongo","algas","arbusto","vegetal","flora"
-    ];
-    const faunaKeys = [
-      "animal","ave","mamífero","pez","reptil","anfibio","insecto","serpiente","araña","invertebrado",
-      "mariposa","crustáceo","lagarto","rata","ratón","cangrejo","tiburón","perro","gato","lagarto",
-      "amphibian","reptile","bird","mammal","fish","insect"
-    ];
-
-    for (const f of faunaKeys) {
-      if (texto.includes(f)) return "fauna";
-    }
-    for (const f of floraKeys) {
-      if (texto.includes(f)) return "flora";
+  // NUEVA FUNCIÓN: Determinar tipo taxonómico
+  function getTaxonomyType(iconic) {
+    if (iconic === "Plantae") {
+      return "flora";
+    } else if (iconic === "Fungi") {
+      return "flora"; // Los hongos se clasifican como flora en tu sistema
+    } else if (
+      iconic === "Animalia" ||
+      iconic === "Aves" ||
+      iconic === "Insecta" ||
+      iconic === "Mammalia" ||
+      iconic === "Reptilia" ||
+      iconic === "Amphibia" ||
+      iconic === "Actinopterygii" ||
+      iconic === "Arachnida" ||
+      iconic === "Mollusca"
+    ) {
+      return "fauna";
     }
     return null;
   }
 
-  // NUEVA FUNCIÓN: Buscar nombre común en español usando el nombre científico
-  async function buscarNombreComunEnEspanol(nombreCientifico) {
-    console.log("🇪🇸 Buscando nombre común en español para:", nombreCientifico);
-    
-    try {
-      const infoES = await buscarEnWikipedia(nombreCientifico, "es");
-      if (infoES.extract) {
-        const nombreComun = obtenerNombreComunDesdeExtracto(infoES.extract, nombreCientifico);
-        if (nombreComun && nombreComun !== nombreCientifico) {
-          console.log("✅ Nombre común encontrado en Wikipedia ES:", nombreComun);
-          return nombreComun;
-        }
+  // NUEVA FUNCIÓN: Obtener nombre común en español
+  function getSpanishName(specie) {
+    // Buscar nombres en español en las traducciones
+    if (specie.names && specie.names.length > 0) {
+      // Buscar específicamente nombres en español
+      const spanishNames = specie.names.filter(
+        (name) =>
+          name.locale === "es" ||
+          name.locale === "es-MX" ||
+          name.locale === "es-ES"
+      );
+
+      if (spanishNames.length > 0) {
+        return spanishNames[0].name;
       }
-    } catch (error) {
-      // No hacer nada, continuar con otras estrategias
+
+      // Si no hay español, buscar nombres comunes en general
+      const commonNames = specie.names.filter(
+        (name) => name.locale === "en"
+      );
+      if (commonNames.length > 0) {
+        return translateCommonName(commonNames[0].name);
+      }
     }
 
-    try {
-      const respuesta = await fetch(`https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(nombreCientifico)}&locale=es`);
-      const json = await respuesta.json();
-      
-      if (json.results && json.results.length > 0) {
-        const taxon = json.results[0];
-        const nombreEspanol = taxon.common_name?.name;
-        if (nombreEspanol && nombreEspanol !== nombreCientifico) {
-          console.log("✅ Nombre común encontrado en iNaturalist ES:", nombreEspanol);
-          return nombreEspanol;
-        }
-      }
-    } catch (error) {
-      console.log("❌ Error buscando en iNaturalist ES:", error);
+    // Fallback al preferred_common_name
+    if (specie.preferred_common_name) {
+      return translateCommonName(specie.preferred_common_name);
     }
 
-    console.log("❌ No se encontró nombre común en español");
-    return null;
+    // Último recurso: crear nombre descriptivo
+    return createDescriptiveName(specie);
   }
 
-  // NUEVA FUNCIÓN: Buscar por nombre científico directamente
-  async function buscarPorNombreCientifico(nombreCientifico) {
-    console.log("🧬 Buscando directamente por nombre científico:", nombreCientifico);
-    
-    try {
-      const info = await buscarEnWikipedia(nombreCientifico, "es");
-      if (info.extract) {
-        const nombreComun = obtenerNombreComunDesdeExtracto(info.extract, nombreCientifico);
-        const tipoWikipedia = determinarTipoDesdeExtracto(info.extract);
-        const descripcionCorta = info.extract.split(".")[0] + ".";
+  // NUEVA FUNCIÓN: Traducir nombres comunes básicos
+  function translateCommonName(englishName) {
+    const nameTranslations = {
+      // Plantas
+      Oak: "Roble",
+      Pine: "Pino",
+      Rose: "Rosa",
+      Sunflower: "Girasol",
+      Daisy: "Margarita",
+      Lily: "Lirio",
+      Tulip: "Tulipán",
+      Cactus: "Cactus",
+      Aloe: "Aloe",
+      Fern: "Helecho",
+      Moss: "Musgo",
+      Grass: "Hierba",
+      Tree: "Árbol",
+      Shrub: "Arbusto",
+      Herb: "Hierba",
 
-        return {
-          nombreComun: capitalizarPrimeraLetra(nombreComun),
-          nombreCientifico: formatearNombreCientifico(nombreCientifico),
-          descripcion: descripcionCorta,
-          tipo: tipoWikipedia,
-          fuente: "Wikipedia ES (nombre científico)",
-          success: true
-        };
+      // Animales
+      Dog: "Perro",
+      Cat: "Gato",
+      Bird: "Ave",
+      Butterfly: "Mariposa",
+      Bee: "Abeja",
+      Ant: "Hormiga",
+      Spider: "Araña",
+      Beetle: "Escarabajo",
+      Fly: "Mosca",
+      Moth: "Polilla",
+      Dragonfly: "Libélula",
+      Ladybug: "Mariquita",
+      Grasshopper: "Saltamontes",
+      Cricket: "Grillo",
+      Frog: "Rana",
+      Lizard: "Lagarto",
+      Snake: "Serpiente",
+      Fish: "Pez",
+      Mouse: "Ratón",
+      Rabbit: "Conejo",
+    };
+
+    // Buscar traducción exacta
+    for (const [english, spanish] of Object.entries(nameTranslations)) {
+      if (englishName.toLowerCase().includes(english.toLowerCase())) {
+        return englishName.replace(
+          new RegExp(english, "gi"),
+          spanish
+        );
       }
-    } catch (error) {
-      console.log("❌ Nombre científico no encontrado en Wikipedia ES");
     }
 
-    try {
-      const info = await buscarEnWikipedia(nombreCientifico, "en");
-      if (info.extract) {
-        const descripcionTraducida = await traducir(info.extract);
-        const nombreComun = obtenerNombreComunDesdeExtracto(info.extract, nombreCientifico);
-        const tipoWikipedia = determinarTipoDesdeExtracto(descripcionTraducida);
-        const descripcionCorta = descripcionTraducida.split(".")[0] + ".";
-
-        const nombreComunEspanol = await buscarNombreComunEnEspanol(nombreCientifico);
-
-        return {
-          nombreComun: capitalizarPrimeraLetra(nombreComunEspanol || nombreComun),
-          nombreCientifico: formatearNombreCientifico(nombreCientifico),
-          descripcion: descripcionCorta,
-          tipo: tipoWikipedia,
-          fuente: "Wikipedia EN (nombre científico)",
-          success: true
-        };
-      }
-    } catch (error) {
-      console.log("❌ Nombre científico no encontrado en Wikipedia EN");
-    }
-
-    return { success: false };
+    // Si no encuentra traducción, devolver el original
+    return englishName;
   }
 
-  // FUNCIÓN PRINCIPAL MEJORADA: Buscar en iNaturalist primero, luego Wikipedia
-  async function procesarInformacionWikipedia(nombreDetectado) {
-    console.log("🔍 Iniciando búsqueda para:", nombreDetectado);
+  // NUEVA FUNCIÓN: Crear nombre descriptivo basado en taxonomía
+  function createDescriptiveName(specie) {
+    const iconic = specie.iconic_taxon_name;
 
-    try {
-      console.log("🌿 Buscando en iNaturalist...");
-      const respuesta = await fetch(`https://api.inaturalist.org/v1/search?q=${encodeURIComponent(nombreDetectado)}&sources=taxa&per_page=5`);
-      const json = await respuesta.json();
-
-      if (json.results && json.results.length > 0) {
-        let mejorCoincidencia = json.results[0];
-        
-        for (const resultado of json.results) {
-          if (resultado.record?.name && esNombreCientificoValido(resultado.record.name)) {
-            mejorCoincidencia = resultado;
-            break;
-          }
-        }
-
-        const especie = mejorCoincidencia.record;
-        const nombreCientifico = especie.name;
-        const tipo = especie.iconic_taxon_name ? especie.iconic_taxon_name.toLowerCase() : null;
-        
-        console.log("✅ iNaturalist - Encontrado:", {
-          nombre: nombreCientifico,
-          tipo: tipo,
-          rank: especie.rank
-        });
-        
-        const infoDetallada = await buscarInformacionConNombreCientifico(nombreCientifico);
-        
-        if (infoDetallada.success) {
-          return {
-            nombreComun: infoDetallada.nombreComun,
-            nombreCientifico: formatearNombreCientifico(nombreCientifico),
-            descripcion: infoDetallada.descripcion,
-            tipo: infoDetallada.tipo || (tipo === "plants" ? "flora" : (tipo ? "fauna" : null)),
-            fuente: infoDetallada.fuente,
-            success: true
-          };
-        } else {
-          const nombreComun = especie.preferred_common_name || capitalizarPrimeraLetra(nombreDetectado);
-          const descripcion = especie.wikipedia_summary || `${especie.rank || 'Taxón'} identificado en base de datos especializada.`;
-          
-          return {
-            nombreComun: capitalizarPrimeraLetra(nombreComun),
-            nombreCientifico: formatearNombreCientifico(nombreCientifico),
-            descripcion: descripcion.split(".")[0] + ".",
-            tipo: tipo === "plants" ? "flora" : (tipo ? "fauna" : null),
-            fuente: "iNaturalist (básico)",
-            success: true
-          };
-        }
-      }
-    } catch (e) {
-      console.log("❌ Error al buscar en iNaturalist:", e);
+    switch (iconic) {
+      case "Plantae":
+        return "Planta no identificada";
+      case "Animalia":
+        return "Animal no identificado";
+      case "Aves":
+        return "Ave no identificada";
+      case "Insecta":
+        return "Insecto no identificado";
+      case "Fungi":
+        return "Hongo no identificado";
+      case "Mammalia":
+        return "Mamífero no identificado";
+      case "Reptilia":
+        return "Reptil no identificado";
+      case "Amphibia":
+        return "Anfibio no identificado";
+      default:
+        return "Especie no identificada";
     }
-
-    console.log("🔄 iNaturalist no encontró resultados, usando búsqueda tradicional...");
-    return await busquedaTradicional(nombreDetectado);
   }
 
-  // NUEVA FUNCIÓN: Buscar información detallada usando nombre científico
-  async function buscarInformacionConNombreCientifico(nombreCientifico) {
-    console.log("🧬 Buscando información detallada para:", nombreCientifico);
-    
-    try {
-      const info = await buscarEnWikipedia(nombreCientifico, "es");
-      if (info.extract) {
-        const nombreComun = obtenerNombreComunDesdeExtracto(info.extract, nombreCientifico);
-        const tipoWikipedia = determinarTipoDesdeExtracto(info.extract);
-        const descripcionCorta = info.extract.split(".")[0] + ".";
+  // NUEVA FUNCIÓN: Obtener descripción original hasta el primer punto (SIN HTML)
+  function getOriginalDescription(specie) {
+    // Primero intentar obtener la descripción de Wikipedia
+    if (specie.wikipedia_summary && specie.wikipedia_summary.length > 0) {
+      // LIMPIAR ETIQUETAS HTML
+      let cleanText = specie.wikipedia_summary
+        .replace(/<[^>]*>/g, '') // Quitar todas las etiquetas HTML
+        .replace(/&nbsp;/g, ' ') // Reemplazar espacios no-break
+        .replace(/&amp;/g, '&')  // Reemplazar &amp;
+        .replace(/&lt;/g, '<')   // Reemplazar &lt;
+        .replace(/&gt;/g, '>')   // Reemplazar &gt;
+        .replace(/&quot;/g, '"') // Reemplazar &quot;
+        .replace(/&#39;/g, "'")  // Reemplazar &#39;
+        .trim();
 
-        console.log("✅ Wikipedia ES - Información encontrada");
-        return {
-          nombreComun: capitalizarPrimeraLetra(nombreComun),
-          descripcion: descripcionCorta,
-          tipo: tipoWikipedia,
-          fuente: "Wikipedia ES + iNaturalist",
-          success: true
-        };
+      // Buscar el primer punto seguido de espacio o final de cadena
+      const firstSentence = cleanText.match(/^[^.]*\./);
+      if (firstSentence) {
+        return firstSentence[0].trim();
       }
-    } catch (error) {
-      console.log("❌ No encontrado en Wikipedia ES con nombre científico");
+      // Si no encuentra punto, tomar hasta los primeros 200 caracteres
+      return cleanText.substring(0, 200) + "...";
     }
 
-    try {
-      const info = await buscarEnWikipedia(nombreCientifico, "en");
-      if (info.extract) {
-        const descripcionTraducida = await traducir(info.extract);
-        const nombreComun = obtenerNombreComunDesdeExtracto(info.extract, nombreCientifico);
-        const tipoWikipedia = determinarTipoDesdeExtracto(descripcionTraducida);
-        const descripcionCorta = descripcionTraducida.split(".")[0] + ".";
-
-        const nombreComunEspanol = await buscarNombreComunEnEspanol(nombreCientifico);
-
-        console.log("✅ Wikipedia EN - Información encontrada y traducida");
-        return {
-          nombreComun: capitalizarPrimeraLetra(nombreComunEspanol || nombreComun),
-          descripcion: descripcionCorta,
-          tipo: tipoWikipedia,
-          fuente: "Wikipedia EN + iNaturalist",
-          success: true
-        };
-      }
-    } catch (error) {
-      console.log("❌ No encontrado en Wikipedia EN con nombre científico");
-    }
-
-    try {
-      const nombreComunEspanol = await buscarNombreComunEnEspanol(nombreCientifico);
-      if (nombreComunEspanol) {
-        console.log("✅ Nombre común en español encontrado:", nombreComunEspanol);
-        
-        const info = await buscarEnWikipedia(nombreComunEspanol, "es");
-        if (info.extract) {
-          const tipoWikipedia = determinarTipoDesdeExtracto(info.extract);
-          const descripcionCorta = info.extract.split(".")[0] + ".";
-
-          return {
-            nombreComun: capitalizarPrimeraLetra(nombreComunEspanol),
-            descripcion: descripcionCorta,
-            tipo: tipoWikipedia,
-            fuente: "Wikipedia ES + iNaturalist (nombre común)",
-            success: true
-          };
-        }
-      }
-    } catch (error) {
-      console.log("❌ No se pudo buscar por nombre común");
-    }
-
-    console.log("❌ No se encontró información detallada");
-    return { success: false };
+    // Si no hay descripción de Wikipedia, usar la descripción básica
+    return getBasicSpanishDescription(specie);
   }
 
-  // FUNCIÓN DE FALLBACK: Búsqueda tradicional
-  async function busquedaTradicional(nombreDetectado) {
-    let nombreParaBuscar = nombreDetectado.trim()
-      .toLowerCase()
-      .replace(/[^a-záéíóúñü\s]/gi, "")
-      .replace(/\s+/g, " ");
-    nombreParaBuscar = capitalizarPrimeraLetra(nombreParaBuscar);
+  // NUEVA FUNCIÓN: Descripción básica en español
+  function getBasicSpanishDescription(specie) {
+    const iconic = specie.iconic_taxon_name;
+    const scientificName = specie.name;
 
-    if (esNombreCientificoValido(nombreDetectado)) {
-      console.log("✅ Nombre detectado parece científico, buscando por nombre científico...");
-      const resultadoCientifico = await buscarPorNombreCientifico(nombreDetectado);
-      if (resultadoCientifico.success) {
-        return resultadoCientifico;
-      }
-    }
+    const descriptions = {
+      Plantae: `${scientificName} es una especie de planta. Las plantas son organismos fotosintéticos fundamentales para los ecosistemas terrestres.`,
+      Aves: `${scientificName} es una especie de ave. Las aves son vertebrados con plumas que desempeñan roles importantes en la dispersión de semillas y control de insectos.`,
+      Insecta: `${scientificName} es una especie de insecto. Los insectos son el grupo más diverso de animales y son cruciales para la polinización y descomposición.`,
+      Mammalia: `${scientificName} es una especie de mamífero. Los mamíferos son vertebrados de sangre caliente que amamantan a sus crías.`,
+      Fungi: `${scientificName} es una especie de hongo. Los hongos descomponen materia orgánica y forman asociaciones simbióticas con plantas.`,
+      Reptilia: `${scientificName} es una especie de reptil. Los reptiles son vertebrados de sangre fría con piel escamosa.`,
+      Amphibia: `${scientificName} es una especie de anfibio. Los anfibios tienen una piel permeable y generalmente requieren agua para reproducirse.`,
+    };
 
-    try {
-      const info = await buscarEnWikipedia(nombreParaBuscar, "es");
-      const tipoWikipedia = determinarTipoDesdeExtracto(info.extract);
-
-      if (info.extract) {
-        const nombreComun = obtenerNombreComunDesdeExtracto(info.extract, nombreDetectado);
-        const nombreCientificoExtraido = extraerNombreCientificoDelTitulo(info);
-        
-        let nombreCientifico = nombreCientificoExtraido;
-        if (!nombreCientifico && esNombreCientificoValido(nombreDetectado)) {
-          nombreCientifico = nombreDetectado;
-        }
-        
-        const descripcionCorta = info.extract.split(".")[0] + ".";
-
-        return {
-          nombreComun: capitalizarPrimeraLetra(nombreComun),
-          nombreCientifico: nombreCientifico ? formatearNombreCientifico(nombreCientifico) : "",
-          descripcion: descripcionCorta,
-          tipo: tipoWikipedia,
-          fuente: "Wikipedia (ES) - Fallback",
-          success: true
-        };
-      }
-    } catch (error) {
-      console.log("❌ Fallback: No encontrado en Wikipedia ES");
-    }
-
-    try {
-      const info = await buscarEnWikipedia(nombreDetectado, "en");
-
-      if (info.extract) {
-        const descripcionTraducida = await traducir(info.extract);
-        const tipoWikipedia = determinarTipoDesdeExtracto(descripcionTraducida);
-        const nombreComun = obtenerNombreComunDesdeExtracto(info.extract, nombreDetectado);
-        const nombreCientificoExtraido = extraerNombreCientificoDelTitulo(info);
-        
-        let nombreCientifico = nombreCientificoExtraido;
-        if (!nombreCientifico && esNombreCientificoValido(nombreDetectado)) {
-          nombreCientifico = nombreDetectado;
-        }
-        
-        const descripcionCorta = descripcionTraducida.split(".")[0] + ".";
-
-        let nombreComunEspanol = nombreComun;
-        if (nombreCientifico) {
-          const nombreComunBuscado = await buscarNombreComunEnEspanol(nombreCientifico);
-          if (nombreComunBuscado) {
-            nombreComunEspanol = nombreComunBuscado;
-          }
-        }
-
-        return {
-          nombreComun: capitalizarPrimeraLetra(nombreComunEspanol),
-          nombreCientifico: nombreCientifico ? formatearNombreCientifico(nombreCientifico) : "",
-          descripcion: descripcionCorta,
-          tipo: tipoWikipedia,
-          fuente: "Wikipedia (EN) - Fallback",
-          success: true
-        };
-      }
-    } catch (error) {
-      console.log("❌ Fallback: No encontrado en Wikipedia EN");
-    }
-
-    console.log("❌ Búsqueda tradicional falló completamente");
-    return { success: false };
+    return (
+      descriptions[iconic] ||
+      `${scientificName} es una especie registrada en la base de datos científica de biodiversidad.`
+    );
   }
 
-  // FUNCIÓN DE ANÁLISIS DE IMAGEN MEJORADA PARA MÓVILES
-  async function analizarImagen(blob) {
-    const reader = new FileReader();
+  // NUEVA FUNCIÓN: Redimensionar imagen si es muy grande
+  function resizeImage(file, maxWidth, maxHeight) {
     return new Promise((resolve) => {
-      reader.onloadend = async () => {
-        const base64Image = reader.result.split(",")[1];
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
 
-        try {
-          console.log('Enviando imagen a Google Vision API...');
-          const response = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              requests: [{
-                image: { content: base64Image },
-                features: [
-                  { type: "WEB_DETECTION", maxResults: 15 },
-                  { type: "LABEL_DETECTION", maxResults: 10 }
-                ],
-              }],
-            }),
-          });
+      img.onload = () => {
+        // Calcular nuevas dimensiones
+        let { width, height } = img;
 
-          const data = await response.json();
-          console.log('Respuesta de Google Vision:', data);
-
-          if (data.error) {
-            mostrarModalReconociendo(false);
-            mostrarAlerta("Error en API: " + data.error.message, "danger");
-            resolve();
-            return;
-          }
-
-          const webEntities = data.responses[0]?.webDetection?.webEntities || [];
-          const labels = data.responses[0]?.labelAnnotations || [];
-
-          function esCandidatoValido(nombre) {
-            if (!nombre || nombre.length < 3) return false;
-            const palabrasGenerales = ['animal', 'plant', 'tree', 'flower', 'bird', 'fish', 'insect', 'mammal', 'reptile', 'nature', 'wildlife'];
-            return !palabrasGenerales.includes(nombre.toLowerCase());
-          }
-
-          const candidatos = [
-            ...webEntities.map(e => ({ 
-              nombre: e.description, 
-              score: e.score || 0, 
-              fuente: 'web',
-              valido: esCandidatoValido(e.description)
-            })),
-            ...labels.map(l => ({ 
-              nombre: l.description, 
-              score: l.score || 0, 
-              fuente: 'label',
-              valido: esCandidatoValido(l.description)
-            }))
-          ];
-
-          const candidatosValidos = candidatos
-            .filter(c => c.valido)
-            .sort((a, b) => b.score - a.score);
-
-          console.log("🔍 Candidatos detectados:", candidatosValidos.slice(0, 5).map(c => `${c.nombre} (${(c.score * 100).toFixed(1)}%)`));
-
-          let nombreDetectado = null;
-          let score = 0;
-
-          if (candidatosValidos.length > 0) {
-            const mejor = candidatosValidos[0];
-            nombreDetectado = mejor.nombre;
-            score = (mejor.score * 100).toFixed(1);
-            console.log(`✅ Mejor candidato seleccionado: ${nombreDetectado} (${score}% - ${mejor.fuente})`);
-          }
-
-          if (!nombreDetectado) {
-            mostrarModalReconociendo(false);
-            mostrarAlerta("No se detectó ninguna especie válida en la imagen", "warning");
-            apagarCamara();
-            document.getElementById("captureForm").classList.add("d-none");
-            resolve();
-            return;
-          }
-
-          const todasDescripciones = candidatos.map(c => c.nombre.toLowerCase());
-          const tipoInicial = determinarTipo(todasDescripciones.find(desc => determinarTipo(desc) !== null) || "");
-
-          if (!tipoInicial) {
-            mostrarModalReconociendo(false);
-            mostrarAlerta("No se reconoció flora ni fauna en la imagen", "warning");
-            apagarCamara();
-            document.getElementById("captureForm").classList.add("d-none");
-            resolve();
-            return;
-          }
-
-          const infoCompleta = await procesarInformacionWikipedia(nombreDetectado);
-
-          if (infoCompleta.success) {
-            nombreComunInput.value = infoCompleta.nombreComun;
-            nombreCientificoInput.value = infoCompleta.nombreCientifico;
-            descripcionInput.value = infoCompleta.descripcion;
-            tipoInput.value = infoCompleta.tipo || tipoInicial;
-            
-            console.log("✅ Información completada exitosamente:");
-            console.log("- Nombre común:", infoCompleta.nombreComun);
-            console.log("- Nombre científico:", infoCompleta.nombreCientifico);
-            console.log("- Tipo:", infoCompleta.tipo || tipoInicial);
-            console.log("- Fuente:", infoCompleta.fuente);
-            
-            mostrarAlerta(`Especie identificada: ${infoCompleta.nombreComun}`, "success");
-          } else {
-            nombreComunInput.value = capitalizarPrimeraLetra(nombreDetectado);
-            nombreCientificoInput.value = "";
-            descripcionInput.value = "";
-            tipoInput.value = tipoInicial;
-            
-            mostrarAlerta("Se detectó la especie pero se necesita completar información manualmente", "warning");
-            console.log("⚠️ Información básica - requiere llenado manual");
-          }
-
-          mostrarModalReconociendo(false);
-
-          // Mostrar imagen capturada y detener cámara
-          if (camStream) {
-            camStream.getTracks().forEach(track => track.stop());
-            camStream = null;
-          }
-          
-          const img = document.createElement("img");
-          img.src = reader.result;
-          img.classList.add("img-fluid");
-          img.style.width = "100%";
-          img.style.height = "auto";
-          img.style.objectFit = "cover";
-          cameraPreview.innerHTML = "";
-          cameraPreview.appendChild(img);
-
-          // Actualizar estado de botones
-          capturePhotoBtn.disabled = true;
-          stopCameraBtn.disabled = true;
-          startCameraBtn.disabled = false;
-          startCameraBtn.innerHTML = '<i class="fas fa-video me-2"></i><span class="d-none d-sm-inline">Iniciar </span>Cámara';
-
-          const toggleBtn = document.getElementById('toggleCameraBtn');
-          if (toggleBtn) {
-            toggleBtn.style.display = 'none';
-            toggleBtn.disabled = true;
-          }
-
-          document.getElementById("captureForm").classList.remove("d-none");
-          resolve();
-
-        } catch (err) {
-          console.error("Error al analizar la imagen:", err);
-          mostrarModalReconociendo(false);
-          mostrarAlerta("Error al analizar imagen: " + err.message, "danger");
-          apagarCamara();
-          document.getElementById("captureForm").classList.add("d-none");
-          resolve();
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width *= ratio;
+          height *= ratio;
         }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Dibujar imagen redimensionada
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convertir a blob
+        canvas.toBlob(
+          (blob) => {
+            resolve(new File([blob], file.name, { type: file.type }));
+          },
+          file.type,
+          0.8
+        );
       };
-      reader.readAsDataURL(blob);
+
+      img.src = URL.createObjectURL(file);
     });
+  }
+
+  // NUEVA FUNCIÓN: Identificar con Computer Vision (requiere API key)
+  async function identifyWithComputerVision(file, apiKey) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(
+      "https://api.inaturalist.org/v1/computervision/score_image",
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Error HTTP ${response.status}: ${response.statusText}`
+      );
+    }
+
+    return await response.json();
+  }
+
+  // NUEVA FUNCIÓN: Buscar por tipo de organismo (método alternativo)
+  async function searchByType(iconicTaxon) {
+    try {
+      const response = await fetch(
+        `https://api.inaturalist.org/v1/taxa?iconic_taxa=${iconicTaxon}&per_page=5&order=desc&order_by=observations_count`
+      );
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        return data.results;
+      }
+    } catch (error) {
+      console.error("Error en búsqueda por tipo:", error);
+    }
+    return [];
+  }
+
+  // NUEVA FUNCIÓN: Buscar especies similares sin autenticación
+  async function identifyWithSearch(file) {
+    console.log("🔍 Usando método de búsqueda alternativo (sin autenticación)");
+    
+    // Buscar especies comunes de diferentes grupos
+    const plantResults = await searchByType('Plantae');
+    const animalResults = await searchByType('Animalia');
+    const birdResults = await searchByType('Aves');
+    
+    // Combinar resultados y tomar los más comunes
+    const allResults = [...plantResults, ...animalResults, ...birdResults];
+    
+    if (allResults.length > 0) {
+      // Tomar el primer resultado como ejemplo (sería mejor implementar análisis de imagen real)
+      const bestResult = allResults[0];
+      return processSpeciesResult(bestResult, 0.5); // Confianza baja para método alternativo
+    }
+    
+    throw new Error("No se pudieron obtener resultados de especies");
+  }
+
+  // NUEVA FUNCIÓN: Procesar resultado de especie
+  function processSpeciesResult(specie, confidence = 1.0) {
+    console.log("✅ Procesando especie:", specie.name);
+    
+    const spanishName = getSpanishName(specie);
+    const scientificName = specie.name || "Nombre científico no disponible";
+    const description = getOriginalDescription(specie);
+    const taxonomyType = getTaxonomyType(specie.iconic_taxon_name);
+    
+    return {
+      nombreComun: capitalizarPrimeraLetra(spanishName),
+      nombreCientifico: scientificName,
+      descripcion: description,
+      tipo: taxonomyType,
+      confidence: Math.round(confidence * 100),
+      success: true
+    };
+  }
+
+  // FUNCIÓN PRINCIPAL DE ANÁLISIS DE IMAGEN ACTUALIZADA
+  async function analizarImagen(blob) {
+    try {
+      console.log('🔍 Iniciando análisis de imagen con nueva lógica...');
+      
+      // Redimensionar imagen si es muy grande
+      const file = new File([blob], "captura.jpg", { type: blob.type });
+      const resizedFile = await resizeImage(file, 800, 600);
+
+      let resultado = null;
+
+      // Método 1: Usar Computer Vision con API key si está disponible
+      if (INATURALIST_API_KEY) {
+        try {
+          console.log('🧠 Intentando con Computer Vision API...');
+          const visionData = await identifyWithComputerVision(resizedFile, INATURALIST_API_KEY);
+          
+          if (visionData && visionData.results && visionData.results.length > 0) {
+            // Filtrar solo resultados que sean flora, fauna o fungi
+            const validResults = visionData.results.filter((result) => {
+              const iconic = result.taxon.iconic_taxon_name;
+              return (
+                iconic === "Plantae" ||
+                iconic === "Animalia" ||
+                iconic === "Aves" ||
+                iconic === "Insecta" ||
+                iconic === "Mammalia" ||
+                iconic === "Reptilia" ||
+                iconic === "Amphibia" ||
+                iconic === "Fungi" ||
+                iconic === "Actinopterygii" ||
+                iconic === "Arachnida" ||
+                iconic === "Mollusca"
+              );
+            });
+
+            if (validResults.length === 0) {
+              mostrarModalReconociendo(false);
+              mostrarAlerta("No se reconoció flora ni fauna en la imagen", "warning");
+              apagarCamara();
+              document.getElementById("captureForm").classList.add("d-none");
+              return;
+            }
+
+            // Obtener detalles del mejor resultado
+            const bestResult = validResults[0];
+            const taxaResponse = await fetch(
+              `https://api.inaturalist.org/v1/taxa/${bestResult.taxon.id}?locale=es`
+            );
+            
+            if (taxaResponse.ok) {
+              const taxaData = await taxaResponse.json();
+              const species = taxaData.results[0];
+              resultado = processSpeciesResult(species, bestResult.combined_score);
+              console.log('✅ Computer Vision exitoso');
+            }
+          }
+        } catch (error) {
+          console.warn("❌ Computer Vision falló:", error);
+          
+          // Si el token expiró, mostrar mensaje específico
+          if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+            mostrarAlerta("⏰ Token de API expirado. Obten uno nuevo en inaturalist.org/users/api_token", "warning");
+          }
+        }
+      }
+
+      // Método 2: Si no funcionó Computer Vision, usar búsqueda alternativa
+      if (!resultado) {
+        console.log('🔄 Usando método alternativo de búsqueda...');
+        
+        try {
+          // Buscar especies comunes como fallback
+          const plantResults = await searchByType('Plantae');
+          if (plantResults.length > 0) {
+            resultado = processSpeciesResult(plantResults[0], 0.3); // Confianza baja
+            resultado.esMetodoAlternativo = true;
+          }
+        } catch (error) {
+          console.error("❌ Método alternativo falló:", error);
+        }
+      }
+
+      mostrarModalReconociendo(false);
+
+      if (resultado && resultado.success) {
+        // Llenar los campos del formulario
+        nombreComunInput.value = resultado.nombreComun;
+        nombreCientificoInput.value = resultado.nombreCientifico;
+        descripcionInput.value = resultado.descripcion;
+        tipoInput.value = resultado.tipo;
+        
+        console.log("✅ Información completada exitosamente:");
+        console.log("- Nombre común:", resultado.nombreComun);
+        console.log("- Nombre científico:", resultado.nombreCientifico);
+        console.log("- Tipo:", resultado.tipo);
+        console.log("- Confianza:", resultado.confidence + "%");
+
+        // 🎯 LÍNEA NUEVA - ENVÍO AUTOMÁTICO AL ARDUINO:
+        fetch(`http://localhost:3001/enviar-arduino?c=${encodeURIComponent(resultado.nombreCientifico)}&n=${encodeURIComponent(resultado.nombreComun)}&d=${encodeURIComponent(resultado.descripcion)}`);
+  
+        if (resultado.esMetodoAlternativo) {
+          mostrarAlerta(`Especie sugerida: ${resultado.nombreComun} (método alternativo - verificar manualmente)`, "warning");
+        } else {
+          mostrarAlerta(`Especie identificada: ${resultado.nombreComun} (${resultado.confidence}% confianza)`, "success");
+        }
+      } else {
+        // Si falló todo, permitir llenado manual
+        nombreComunInput.value = "";
+        nombreCientificoInput.value = "";
+        descripcionInput.value = "";
+        tipoInput.value = "";
+        
+        mostrarAlerta("No se pudo identificar la especie. Por favor, completa la información manualmente.", "warning");
+        console.log("❌ Identificación falló - requiere llenado manual");
+      }
+
+      // Mostrar imagen capturada y detener cámara
+      if (camStream) {
+        camStream.getTracks().forEach(track => track.stop());
+        camStream = null;
+      }
+      
+      // MOSTRAR LA IMAGEN CON EL MISMO TAMAÑO QUE TENÍA LA CÁMARA
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(blob);
+      img.classList.add("img-fluid");
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.objectFit = "cover"; // Mantener el mismo comportamiento que el video
+      img.style.borderRadius = "inherit"; // Heredar border-radius del contenedor
+      
+      cameraPreview.innerHTML = "";
+      cameraPreview.appendChild(img);
+
+      // Actualizar estado de botones
+      capturePhotoBtn.disabled = true;
+      stopCameraBtn.disabled = true;
+      startCameraBtn.disabled = false;
+      startCameraBtn.innerHTML = '<i class="fas fa-video me-2"></i><span class="d-none d-sm-inline">Iniciar </span>Cámara';
+
+      const toggleBtn = document.getElementById('toggleCameraBtn');
+      if (toggleBtn) {
+        toggleBtn.style.display = 'none';
+        toggleBtn.disabled = true;
+      }
+
+      document.getElementById("captureForm").classList.remove("d-none");
+
+    } catch (error) {
+      console.error("❌ Error completo en análisis:", error);
+      mostrarModalReconociendo(false);
+      
+      let errorMessage = "Error desconocido al analizar la imagen";
+      
+      if (error.message.includes("401")) {
+        errorMessage = "API Key requerida o expirada. Obtén una nueva en inaturalist.org/users/api_token";
+      } else if (error.name === "TypeError" && error.message.includes("fetch")) {
+        errorMessage = "Problema de conexión. Verifica tu internet.";
+      } else {
+        errorMessage = error.message;
+      }
+      
+      mostrarAlerta("Error al analizar imagen: " + errorMessage, "danger");
+      apagarCamara();
+      document.getElementById("captureForm").classList.add("d-none");
+    }
   }
 
   // Cancelar captura y ocultar formulario
@@ -1036,9 +954,17 @@ document.addEventListener("DOMContentLoaded", () => {
     apagarCamara();
   });
 
-  // Guardar registro
+  // Guardar registro - PROTEGIDO CONTRA DOBLE CLICK
   formRegistro.addEventListener("submit", (e) => {
     e.preventDefault();
+    
+    // Prevenir doble envío
+    const submitBtn = formRegistro.querySelector('button[type="submit"]');
+    if (submitBtn && submitBtn.disabled) {
+      console.log('⚠️ Envío ya en proceso, ignorando...');
+      return;
+    }
+    
     if (!fotoBlob) {
       mostrarAlerta("No has capturado una foto.", "warning");
       return;
@@ -1048,30 +974,46 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const formData = new FormData(formRegistro);
-    formData.append("imagen", fotoBlob, "captura.jpg");
+    // Deshabilitar botón y mostrar estado de carga
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+      
+      // Función para restaurar el botón
+      const restaurarBoton = () => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      };
+      
+      const formData = new FormData(formRegistro);
+      formData.append("imagen", fotoBlob, "captura.jpg");
 
-    fetch("../apis/guardar_registro.php", {
-      method: "POST",
-      body: formData,
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "ok") {
-          refrescarEspecies();
-          refrescarEstadisticas();
-          mostrarAlerta("Especie registrada correctamente", "success");
-          formRegistro.reset();
-          document.getElementById("captureForm").classList.add("d-none");
-          fotoBlob = null;
-          apagarCamara();
-        } else {
-          mostrarAlerta(data.message || "Error al guardar", "danger");
-        }
+      fetch("../apis/guardar_registro.php", {
+        method: "POST",
+        body: formData,
       })
-      .catch(() => {
-        mostrarAlerta("Error de conexión con el servidor", "danger");
-      });
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "ok") {
+            refrescarEspecies();
+            refrescarEstadisticas();
+            mostrarAlerta("Especie registrada correctamente", "success");
+            formRegistro.reset();
+            document.getElementById("captureForm").classList.add("d-none");
+            fotoBlob = null;
+            apagarCamara();
+          } else {
+            mostrarAlerta(data.message || "Error al guardar", "danger");
+          }
+          restaurarBoton();
+        })
+        .catch((error) => {
+          console.error('Error en guardado:', error);
+          mostrarAlerta("Error de conexión con el servidor", "danger");
+          restaurarBoton();
+        });
+    }
   });
 
   // Inicializar todo al cargar la página
