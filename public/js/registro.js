@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Reemplaza con tu API Key de iNaturalist (dura 24 horas)
-  const INATURALIST_API_KEY = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo5NjA4MDgwLCJleHAiOjE3NTQ3MDAzOTV9.zp-4SdPxQgOZH43m4Oyn8FylK5lP6eBKYtUtCLcol29yjdjwXRPGnEEukjBdblziGVr4DboxZifrPPnCN4q6dA";
+  const INATURALIST_API_KEY = "eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjo5NjA4MDgwLCJleHAiOjE3NTU2MzAzMTJ9.FFCrsNRNFJFM3HqG2nsyaKz6u8dj3YQm_cvN-x0Vvo_Vdlj1n8NoEecrKPp3jISkKzGlVFlfqt71p2crloXqpA";
 
   let fotoBlob = null;
   let camStream = null;
